@@ -1,0 +1,9 @@
+body {
+    font-size: 1.25rem;
+}
+main {
+    min-height: 100vh;
+}
+.avatar {
+    max-width: 100%;
+}
