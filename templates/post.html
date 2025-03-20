@@ -6,7 +6,7 @@
 <div class="col-md-10 offset-md-1">
     <img class="img-fluid mx-auto d-block" src="{{ url_for('static', filename='images/' + post.image_id) }}" alt="Card image cap">
 </div>
-<p class="text-justify"><br>{{ post.text }}<br></p>
+<p class="text-justify text"><br>{{ post.text }}<br></p>
 <form class="border p-3 mb-4 rounded">
     <div class="mb-3">
         <label for="comment" class="form-label h5">Оставьте комментарий</label>
@@ -15,7 +15,7 @@
     <button type="submit" class="btn btn-primary">Отправить</button>
 </form>
 
-<div class="d-flex mb-4">
+<div class="d-flex mb-4 comments">
     <div class="flex-shrink-0">
         <img src="{{ url_for('static', filename='images/avatar.jpg') }}" 
              class="rounded-circle" 

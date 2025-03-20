@@ -1,5 +1,5 @@
 import random
-from flask import Flask, render_template
+from flask import Flask, render_template, abort
 from faker import Faker
 
 fake = Faker()
@@ -44,9 +44,16 @@ def posts():
 
 @app.route('/posts/<int:index>')
 def post(index):
-    p = posts_list[index]
+    try:
+        p = posts_list[index]
+    except IndexError:
+        abort(404)
     return render_template('post.html', title=p['title'], post=p)
 
 @app.route('/about')
 def about():
     return render_template('about.html', title='Об авторе')
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('error404.html')
