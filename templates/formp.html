@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Параметры формы</h1>
+<form method="POST">
+    <input type="email" name="email" placeholder="EMAIL">
+    <input type="password" name="passw" placeholder="PASSWORD">
+    <button type="submit">Отправить</button>
+</form>
+{% if form_data %}
+<ul>
+    {% for key, value in form_data.items() %}
+    <li>{{ key }} {{ value }}</li>
+    {% endfor %}
+</ul>
+
+{% else %}
+<p>Данные не указаны</p>
+{% endif %}
+{% endblock %}

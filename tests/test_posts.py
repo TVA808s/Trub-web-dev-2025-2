@@ -119,3 +119,89 @@ def test_footer_present(client):
     response = client.get('/')
     assert 'Трубицын Вячеслав Александрович' in response.data.decode()
     assert '231-3213' in response.data.decode()
+
+def test_url_params(client):
+    response = client.get('/urlp?waw>9')
+    assert 'waw&gt;9 : ' in response.data.decode()
+
+def test_url_params_empty(client):
+    response = client.get('/urlp')
+    assert 'url параметры не заданы' in response.data.decode()
+
+def test_headlines_1(client):
+    response = client.get('/headlines')
+    assert 'Host' in response.data.decode()
+    assert '.' in response.data.decode()
+
+# другие заголовки не видит и выдает ошибку
+
+def test_cookie_1(client):
+    response = client.get('/cookie')
+    assert 'Нет куки' in response.data.decode()
+
+def test_cookie_2(client):
+    response = client.get('/cookie')
+    response2 = client.get('/cookie')
+    assert 'self_made 999' in response2.data.decode()
+
+def test_form_data(client):
+    response = client.get('/formp')
+    assert 'Данные не указаны' in response.data.decode()
+
+def test_form_data_2(client):
+    response = client.post('/formp', data={
+        'email': 'awd@gmail.com',
+        'passw': '123'}, follow_redirects=True)
+    assert 'awd@gmail.com' in response.data.decode()
+    assert '123' in response.data.decode()
+
+def test_telephone_1(client):
+    response = client.post('/telephone', data={
+        'phone': '89006669922'},follow_redirects=True)
+    assert '8-900-666-99-22' in response.data.decode()
+
+def test_telephone_2(client):
+    response = client.post('/telephone', data={
+        'phone': '+79006669922'},follow_redirects=True)
+    assert '8-900-666-99-22' in response.data.decode()
+
+def test_telephone_3(client):
+    response = client.post('/telephone', data={
+        'phone': '9006669922'},follow_redirects=True)
+    assert '8-900-666-99-22' in response.data.decode()
+
+def test_telephone_4(client):
+    response = client.post('/telephone', data={
+        'phone': '+7 (123) 456-75-90'},follow_redirects=True)
+    assert '8-123-456-75-90' in response.data.decode()
+
+def test_telephone_5(client):
+    response = client.post('/telephone', data={
+        'phone': '8(123)4567590'},follow_redirects=True)
+    assert '8-123-456-75-90' in response.data.decode()
+
+def test_telephone_6(client):
+    response = client.post('/telephone', data={
+        'phone': '123.456.75.90'},follow_redirects=True)
+    assert '8-123-456-75-90' in response.data.decode()
+
+def test_bad_telephone(client):
+    response = client.post('/telephone', data={
+        'phone': '10000000000000'},follow_redirects=True)
+    assert 'Недопустимый ввод. Неверное количество цифр.' in response.data.decode()
+    assert 'is-invalid' in response.data.decode()
+    assert 'invalid-feedback' in response.data.decode()
+
+def test_bad_telephone_2(client):
+    response = client.post('/telephone', data={
+        'phone': '10ad312412'},follow_redirects=True)
+    assert 'Недопустимый ввод. В номере телефона встречаются недопустимые символы.' in response.data.decode()
+    assert 'is-invalid' in response.data.decode()
+    assert 'invalid-feedback' in response.data.decode()
+
+def test_bad_telephone_3(client):
+    response = client.post('/telephone', data={
+        'phone': '1234567890='},follow_redirects=True)
+    assert 'Недопустимый ввод. В номере телефона встречаются недопустимые символы.' in response.data.decode()
+    assert 'is-invalid' in response.data.decode()
+    assert 'invalid-feedback' in response.data.decode()
