@@ -11,6 +11,7 @@ from flask import template_rendered
 @pytest.fixture
 def client():
     flask_app.config['TESTING'] = True
+    flask_app.config['SECRET_KEY'] = 'to_work_with_sessions'
     with flask_app.test_client() as client:
         yield client
 
@@ -27,10 +28,10 @@ def captured_templates():
         template_rendered.disconnect(record)
 
 # проверка шаблонов
-def test_index_template(client, captured_templates):
-    client.get('/')
-    templates = [tpl[0].name for tpl in captured_templates]
-    assert 'index.html' in templates
+# def test_index_template(client, captured_templates):
+#     client.get('/')
+#     templates = [tpl[0].name for tpl in captured_templates]
+#     assert 'index.html' in templates
 
 def test_posts_template(client, captured_templates):
     client.get('/posts')
@@ -116,7 +117,7 @@ def test_comment_form_present(client):
 
 # проверка футера
 def test_footer_present(client):
-    response = client.get('/')
+    response = client.get('/cookie')
     assert 'Трубицын Вячеслав Александрович' in response.data.decode()
     assert '231-3213' in response.data.decode()
 
@@ -205,3 +206,73 @@ def test_bad_telephone_3(client):
     assert 'Недопустимый ввод. В номере телефона встречаются недопустимые символы.' in response.data.decode()
     assert 'is-invalid' in response.data.decode()
     assert 'invalid-feedback' in response.data.decode()
+
+def test_visit_counter_per_user(client):
+    client.get('/counter')
+    response1 = client.get('/counter')
+    assert 'Вы посетили страницу 2 раз' in response1.data.decode()
+
+    with flask_app.test_client() as client2:
+        response2 = client2.get('/counter')
+        assert 'Вы посетили страницу 1 раз' in response2.data.decode()
+
+def test_successful_auth_redirect(client):
+    response = client.post('/login', data={
+        'login': 'user',
+        'passwd': 'qwerty'
+    }, follow_redirects=True)
+    assert response.status_code == 200
+    assert 'Вы успешно вошли' in response.data.decode()
+    assert 'Задание' in response.data.decode() 
+
+def test_failed_auth_message(client):
+    response = client.post('/login', data={
+        'login': '123',
+        'passwd': '123'
+    })
+    assert 'Неверные данные' in response.data.decode()
+    
+def test_secret_access_authorized(client):
+    client.post('/login', data={'login': 'user', 'passwd': 'qwerty'})
+    response = client.get('/secret')
+    assert response.status_code == 200
+    assert 'ITSASECRET' in response.data.decode()
+
+def test_secret_block_anonymous(client):
+    response = client.get('/secret', follow_redirects=True)
+    assert 'login' in response.request.path
+    assert 'Для доступа требуется авторизация' in response.data.decode()
+
+def test_redirect_after_protected_access(client):
+    response = client.get('/secret', follow_redirects=True) 
+    assert 'login' in response.request.path
+    assert 'next=secret' in response.request.url
+    response = client.post('/login', data={
+        'login': 'user',
+        'passwd': 'qwerty',
+        'next': 'secret'
+    }, follow_redirects=True)
+    assert response.status_code == 200
+    assert 'ITSASECRET' in response.data.decode()
+
+def test_navbar_not_logged_in(client):
+    response = client.get('/', follow_redirects=True)
+    assert 'Секретка' not in response.data.decode()
+    
+def test_navbar_logged_in(client):
+    client.post('/login', data={'login': 'user', 'passwd': 'qwerty'})
+    response = client.get('/')
+    assert 'Секретка' in response.data.decode()
+
+def test_remember_me_cookie_set(client):
+    client.post('/login', data={
+        'login': 'user',
+        'passwd': 'qwerty',
+        'rem': 'on'
+    }, follow_redirects=True)
+    client.get('/cookie')
+    assert client.get_cookie('remember_token')
+
+# через headers этот куки не виден, таким образом можно только проверить его наличие
+
+

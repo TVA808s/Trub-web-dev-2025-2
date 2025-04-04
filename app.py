@@ -1,10 +1,32 @@
-from flask import Flask, render_template, abort, request, make_response
+from flask import Flask, render_template, abort, request, make_response, session, redirect, url_for, flash
 from faker import Faker
+from flask_login import LoginManager, UserMixin, login_user, login_required
 
 fake = Faker()
 
 app = Flask(__name__)
+app.secret_key = 'to_work_with_sessions'
 application = app
+# app.config['PERMANENT_SESSION_LIFETIME'] = 60
+app.config['REMEMBER_COOKIE_DURATION'] = 60*60*24*365
+app.config['REMEMBER_COOKIE_SECURE'] = False
+app.config['REMEMBER_COOKIE_HTTPONLY'] = False
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+class User(UserMixin):
+    def __init__(self, id):
+        self.id = id
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User(user_id)
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    flash('Для доступа требуется авторизация', 'error')
+    return redirect(url_for('login', next=request.endpoint))
 
 images_ids = ['7d4e9175-95ea-4c5f-8be5-92a6b708bb3c',
               '2d2ab7df-cdbc-48a8-a936-35bba702def5',
@@ -35,6 +57,7 @@ def generate_post(i):
 posts_list = sorted([generate_post(i) for i in range(5)], key=lambda p: p['date'], reverse=True)
 
 @app.route('/')
+@login_required
 def index():
     return render_template('index.html')
 
@@ -116,3 +139,36 @@ def telephone():
             error = str(e)
     
     return render_template('telephone.html', phone=NumberFormat(number), error=error)
+
+@app.route('/counter')
+def counter():
+    session['visited'] = session.get('visited', 0) + 1
+    return render_template('counter.html', s=session['visited'])
+
+users = {'user': {'password': 'qwerty'}}
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        log = request.form.get('login')
+        pas = request.form.get('passwd')
+        rem = request.form.get('rem') == 'on'
+        if log in users and users[log]['password'] == pas:
+            user = User(log)
+            login_user(user, remember=rem)
+            # session.permanent = True
+            flash('Вы успешно вошли', 'success')
+            next_page = request.form.get('next')
+            if next_page:
+                return redirect(url_for(next_page))
+            else:
+                return redirect(url_for('index'))
+        else:
+            flash('Неверные данные', 'error')
+    return render_template('login.html')
+
+@app.route('/secret')
+@login_required
+def secret():
+    return render_template('secret.html')
+
+

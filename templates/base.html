@@ -36,6 +36,17 @@
                   <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('about') }}">Об авторе</a>
                   </li>
+                  {% if current_user.is_authenticated %}
+                      <li class="nav-item">
+                          <a class="nav-link" href="{{ url_for('secret') }}">Секретка</a>
+                      </li>
+                  {% endif %}
+                  <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('counter') }}">Счетчик</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('login') }}">Аунтификация</a>
+                  </li>
                 </ul>
               </div>
             </div>
@@ -55,11 +66,13 @@
 
   </body>
   <footer>
-    <div class="row">
-      <div class="col-mb-1 bg-dark">
-        <div class="d-flex flex-column justify-content-center align-items-center">
-          <h4 class="text-white">Трубицын Вячеслав Александрович</h4>
-          <h4 class="text-white">231-3213</h4>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12 bg-dark">
+          <div class="d-flex flex-column justify-content-center align-items-center">
+            <h4 class="text-white">Трубицын Вячеслав Александрович</h4>
+            <h4 class="text-white">231-3213</h4>
+          </div>
         </div>
       </div>
     </div>

@@ -1,7 +1,13 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
+{% with messages = get_flashed_messages(category_filter=["success"]) %}
+   {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+   {% endif %}
+{% endwith %}
 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
     <li class="nav-item">
       <a class="nav-link" aria-current="page" href="{{ url_for('urlp') }}">ПАРАМЕТРЫ URL</a>
