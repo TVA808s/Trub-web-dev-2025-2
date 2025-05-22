@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if current_user.is_authenticated %}
+<h1>ВСЕГО ПОСЕЩЕНИЙ У {{ current_user.login }}: {{ session.get('user_' ~ current_user.id ~ '_visits', 0) }}</h1>
+    {% else %}
+    <h1>ВСЕГО ПОСЕЩЕНИЙ: {{ session.get('counter', 0) }}</h1>
+    {% endif %}
+{% endblock %}

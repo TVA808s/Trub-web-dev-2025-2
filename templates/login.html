@@ -1,19 +1,32 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{% with messages = get_flashed_messages(category_filter=["error"]) %}
-   {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-warning">{{ message }}</div>
-        {% endfor %}
-   {% endif %}
-{% endwith %}
-<h1>LOGIN</h1>
-<form method="POST">
-    <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
-    <input type="text" name="login" id="login">
-    <input type="password" name="passwd" id="passwd">
-    <input type="checkbox" name="rem" id="rem" value="on">
-    <button type="submit">Войти</button>
+<form method = post>
+    <div class="mb-3">
+        <div class="mb-3">
+            <label for="username"> Логин </label>
+            <input class="form-control {% if error %}is-invalid{% endif %}" id="username" name="username">
+            {% if error %}
+                <div class="invalid-feedback">
+                    {{ error }}
+                </div>
+            {% endif %} 
+        </div>
+        <div class="mb-3">
+            <label for="password"> Пароль </label>
+            <input type="password" class="form-control {% if error %}is-invalid{% endif %}" id="password" name="password">
+            {% if error %}
+                <div class="invalid-feedback">
+                    {{ error }}
+                </div>
+            {% endif %} 
+        </div>
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="check" name="remember_me">
+            <label class="form-check-label" for="check"> Запомнить меня </label>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary"> Войти </button>
 </form>
+
 {% endblock %}
