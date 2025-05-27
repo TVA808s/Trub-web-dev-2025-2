@@ -6,10 +6,10 @@ import mysql.connector
 import os
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from app import create_app
-from app.db import DBConnector
-from app.repositories.role_repository import RoleRepository
-from app.repositories.user_repository import UserRepository
+from code import create_app
+from code.db import DBConnector
+from code.repositories.role_repository import RoleRepository
+from code.repositories.user_repository import UserRepository
 
 TEST_DB_CONFIG = {
     'MYSQL_USER': 'root',

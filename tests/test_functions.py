@@ -1,6 +1,6 @@
 import pytest, re
 
-from app.validators.password_validator import password_validator
+from code.validators.password_validator import password_validator
 
 @pytest.mark.parametrize("input_password, expected_output", [
     ("1", "Пароль должен содержать как минимум 8 символов!"),
