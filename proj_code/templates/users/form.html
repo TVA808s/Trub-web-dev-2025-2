@@ -1,4 +1,4 @@
-{% macro user_form(roles, action, user_data={}, val_error=None) %}
+{% macro user_form(roles, action, user_data={}, password_error, login_error) %}
 <form method='post' novalidate>
     {% if action == 'new' %}
 
