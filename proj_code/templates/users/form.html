@@ -4,10 +4,14 @@
 
     <div class="mb-3">
         <label for="login" class="form-label">Логин</label>
-        <input type="text" name="username" id="login" class="form-control {% if login_error %}is-invalid{% else %}is-valid{% endif %}" value="{{ user_data.username or ''}}">
+        <input type="text" name="username" id="login" class="form-control {% if login_error or not user_data.username %}is-invalid{% else %}is-valid{% endif %}" value="{{ user_data.username or ''}}">
         {% if login_error%}
             <div class="invalid-feedback">
                 {{login_error}}
+            </div>
+        {% elif not user_data.username %}
+            <div class="invalid-feedback">
+                нужно ввести логин
             </div>
         {% else %}
             <div class="valid-feedback">
@@ -17,10 +21,14 @@
     </div>
     <div class="mb-3">
         <label for="password" class="form-label">Пароль</label>
-        <input type="password" name="password" id="password" class="form-control {% if password_error %}is-invalid{% else %}is-valid{% endif %}" value="{{ user_data.password or ''}}">
+        <input type="password" name="password" id="password" class="form-control {% if password_error or not user_data.password %}is-invalid{% else %}is-valid{% endif %}" value="{{ user_data.password or ''}}">
         {% if password_error %}
             <div class="invalid-feedback">
                 {{password_error}}
+            </div>
+        {% elif not user_data.password %}
+            <div class="invalid-feedback">
+                нужно ввести пароль
             </div>
         {% else %}
             <div class="valid-feedback">

@@ -56,7 +56,7 @@ def new():
             db.connect().rollback()
     return render_template('users/new.html', password_error=None, login_error=None, user_data=user_data, roles=role_repository.all())
 
-@bp.route('/<int:user_id>/delete', methods = ['POST'])
+@bp.route('/<int:user_id>/delete', methods = ['DELETE'])
 @login_required
 def delete(user_id):
     user_repository.delete(user_id)
