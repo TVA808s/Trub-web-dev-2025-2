@@ -1,12 +1,12 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import login_required, current_user
 import mysql.connector as connector
-from .validators.password_validator import password_validator
+from code.validators.password_validator import password_validator
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from .repositories.user_repository import UserRepository
-from .repositories.role_repository import RoleRepository
-from .db import db
+from code.repositories.user_repository import UserRepository
+from code.repositories.role_repository import RoleRepository
+from code.db import db
 
 user_repository = UserRepository(db)
 role_repository = RoleRepository(db)
