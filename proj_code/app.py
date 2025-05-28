@@ -16,15 +16,15 @@ def create_app(test_config=None):
     db.init_app(app)
     
     # Регистрация CLI-команд
-    from cli import init_db_command  
+    from proj_code.cli import init_db_command  
     app.cli.add_command(init_db_command)
     
     # Регистрация блюпринтов
-    from auth import bp as auth_bp, login_manager
+    from proj_code.auth import bp as auth_bp, login_manager
     app.register_blueprint(auth_bp)
     login_manager.init_app(app)
     
-    from users import bp as users_bp, index
+    from proj_code.users import bp as users_bp, index
     app.register_blueprint(users_bp)
     app.add_url_rule('/', 'index', index)
     
