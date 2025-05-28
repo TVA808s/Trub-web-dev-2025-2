@@ -97,7 +97,7 @@ def changepassword(user_id):
     user = user_repository.get_by_id(user_id)
     old_password_validation = None
     passwords_not_matching = None
-    validation_error = None
+    password_error = None
     user_data = {}
     
     if user is None:
@@ -116,9 +116,9 @@ def changepassword(user_id):
         if user_data['new_password'] != user_data['new_password_r']:
             passwords_not_matching = "Пароли не совпадают!"
 
-        validation_error = password_validator(user_data['new_password'])
+        password_error = password_validator(user_data['new_password'])
                     
-        if not validation_error and not passwords_not_matching and not old_password_validation:
+        if not password_error and not passwords_not_matching and not old_password_validation:
             try:
                 user_repository.change_password(user[0], user_data["new_password"])
                 flash('Пароль успешно изменен', 'success')
@@ -128,4 +128,4 @@ def changepassword(user_id):
                 db.connect().rollback()
 
           
-    return render_template('users/changepassword.html', validation_error=validation_error, old_password_validation=old_password_validation, passwords_not_matching=passwords_not_matching, user_data=user_data)
+    return render_template('users/changepassword.html', password_error=password_error, old_password_validation=old_password_validation, passwords_not_matching=passwords_not_matching, user_data=user_data)
