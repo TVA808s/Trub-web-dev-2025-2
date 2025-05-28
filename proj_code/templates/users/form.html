@@ -1,5 +1,5 @@
 {% macro user_form(roles, action, user_data={}, val_error=None) %}
-<form method='POST' novalidate>
+<form method='post' novalidate>
     {% if action == 'new' %}
 
     <div class="mb-3">
@@ -7,11 +7,15 @@
         <input type="text" name="username" id="login" class="form-control {% if not user_data.username or (val_error and val_error.startswith('Username')) %}is-invalid{% else %}is-valid{% endif %}" value="{{ user_data.username or ''}}">
         {% if not user_data.username %}
             <div class="invalid-feedback">
-                Заполните логин!
+                Заполните имя пользователя!
             </div>
         {% elif val_error and val_error.startswith('Username') %}
             <div class="invalid-feedback">
                {{ val_error }}
+            </div>
+        {% else %}
+            <div class="valid-feedback">
+                Все круто!
             </div>
         {% endif %}
     </div>
@@ -26,16 +30,23 @@
             <div class="invalid-feedback">
                {{ val_error }}
             </div>
+        {% else %}
+            <div class="valid-feedback">
+                Все круто!
+            </div>
         {% endif %}
     </div>
     {% endif %}
-
     <div class="mb-3">
         <label for="first_name" class="form-label">Имя</label>
         <input type="text" name="first_name" id="first_name" class="form-control {% if not user_data.first_name %}is-invalid{% else %}is-valid{% endif %}" value="{{ user_data.first_name or ''}}">
         {% if not user_data.first_name %}
             <div class="invalid-feedback">
-                Заполните имя!
+                Заполните Ваше имя!
+            </div>
+        {% else %}
+            <div class="valid-feedback">
+                Все круто!
             </div>
         {% endif %}
     </div>
@@ -44,7 +55,11 @@
         <input type="text" name="last_name" id="last_name" class="form-control {% if not user_data.last_name %}is-invalid{% else %}is-valid{% endif %}" value="{{ user_data.last_name or ''}}">
         {% if not user_data.last_name %}
             <div class="invalid-feedback">
-                Заполните фамилию!
+                Заполните Вашу фамилию!
+            </div>
+        {% else %}
+            <div class="valid-feedback">
+                Все круто!
             </div>
         {% endif %}
     </div>
@@ -53,7 +68,11 @@
         <input type="text" name="middle_name" id="middle_name" class="form-control {% if not user_data.middle_name %}is-invalid{% else %}is-valid{% endif %}" value="{{ user_data.middle_name or ''}}">
         {% if not user_data.middle_name %}
             <div class="invalid-feedback">
-                Заполните отчество (по желанию)
+                Заполните Ваше отчество, если хотите!
+            </div>
+        {% else %}
+            <div class="valid-feedback">
+                Все круто!
             </div>
         {% endif %}
     </div>
@@ -62,7 +81,7 @@
         <select name="role_id" id="role_id" class="form-select">
             {% for role in roles %}
                 <option value="{{ role.id }}"
-                    {% if user_data.role_id == role.id %} selected {% endif %}>
+                    {% if user_data.role_id == role.id|string %} selected {% endif %}>
                     {{ role.name }}
                 </option>
             {% endfor %}
