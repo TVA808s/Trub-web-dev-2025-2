@@ -108,7 +108,7 @@ def changepassword(user_id):
         fields = ('old_password', 'new_password', 'new_password_r')
         user_data = { field: request.form.get(field) or None for field in fields }
         
-        check = user_repository.validate_password(user[0], user_data['old_password'])
+        check = user_repository.validate_password(user.password, user_data['old_password'])
         
         if check is None:
             old_password_validation = "Неверный старый пароль!"

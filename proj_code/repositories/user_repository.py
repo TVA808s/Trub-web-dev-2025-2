@@ -23,10 +23,16 @@ class UserRepository:
     def create(self, username, password, first_name, middle_name, last_name, role_id):
         connection = self.db_connector.connect()
         with connection.cursor(named_tuple=True) as cursor:
-            query = (
-                "INSERT INTO users (username, password, first_name, middle_name, last_name, role_id) VALUES"
-                "(%s, SHA2(%s,256), %s, %s, %s, %s)"
-            )
+            if last_name == None:
+                query = (
+                "INSERT INTO users (username, password, first_name, middle_name, role_id) VALUES"
+                "(%s, SHA2(%s,256), %s, %s, %s)"
+                )
+            else:
+                query = (
+                    "INSERT INTO users (username, password, first_name, middle_name, last_name, role_id) VALUES"
+                    "(%s, SHA2(%s,256), %s, %s, %s, %s)"
+                )
             user_data = (username, password, first_name, middle_name, last_name, role_id)
             cursor.execute(query, user_data)
             connection.commit()
