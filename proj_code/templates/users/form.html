@@ -5,7 +5,7 @@
     <div class="mb-3">
         <label for="login" class="form-label">Логин</label>
         <input type="text" name="username" id="login" class="form-control {% if login_error %}is-invalid{% else %}is-valid{% endif %}" value="{{ user_data.username or ''}}">
-        {% if not user_data.username %}
+        {% if login_error%}
             <div class="invalid-feedback">
                 {{login_error}}
             </div>
@@ -45,6 +45,11 @@
     <div class="mb-3">
         <label for="last_name" class="form-label">Фамилия (необязательно)</label>
         <input type="text" name="last_name" id="last_name" class="form-control" value="{{ user_data.last_name or ''}}">
+         {% if 1 %}
+            <div class="valid-feedback">
+                супер!
+            </div>
+        {% endif %}
     </div>
     <div class="mb-3">
         <label for="middle_name" class="form-label">Отчество</label>

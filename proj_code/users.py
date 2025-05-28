@@ -39,8 +39,9 @@ def new():
         fields = ('username', 'password', 'first_name', 'middle_name', 'last_name', 'role_id')
         user_data = { field: request.form.get(field) or None for field in fields }
         
-        login_error = login_validator(user_data['username']) or None
         password_error = password_validator(user_data['password']) or None
+        login_error = login_validator(user_data['username']) or None
+        
         
         if password_error or login_error:
             flash([password_error or '', login_error or ''], 'danger')
