@@ -108,7 +108,7 @@ def changepassword(user_id):
         fields = ('old_password', 'new_password', 'new_password_r')
         user_data = { field: request.form.get(field) or None for field in fields }
         
-        check = user_repository.validate_password(user.password, user_data['old_password'])
+        check = user_repository.validate_password(user_id, user_data['old_password'])
         
         if check is None:
             old_password_validation = "Неверный старый пароль!"
@@ -120,7 +120,7 @@ def changepassword(user_id):
                     
         if not password_error and not passwords_not_matching and not old_password_validation:
             try:
-                user_repository.change_password(user[0], user_data["new_password"])
+                user_repository.change_password(user_id, user_data["new_password"])
                 flash('Пароль успешно изменен', 'success')
                 return redirect(url_for('users.index'))
             except connector.errors.DatabaseError:
