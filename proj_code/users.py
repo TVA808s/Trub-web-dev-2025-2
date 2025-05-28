@@ -29,7 +29,7 @@ def show(user_id):
         flash('Пользователя нет в базе данных!', 'danger')
         return redirect(url_for('users.index'))
     user_role = role_repository.get_by_id(user.role_id)
-    return render_template('users/show.html', user_data=user, user_role=getattr(user_role, 'name', ''))
+    return render_template('users/show.html', password_error=None, login_error=None, user_data=user, user_role=getattr(user_role, 'name', ''))
 
 @bp.route('/new', methods = ['POST', 'GET'])
 @login_required
@@ -44,7 +44,7 @@ def new():
         
         if password_error or login_error:
             flash([password_error or '', login_error or ''], 'danger')
-            return render_template('users/new.html', user_data=user_data, roles=role_repository.all(), password_error=password_error, login_error=login_error)
+            return render_template('users/new.html', password_error=password_error, login_error=login_error, user_data=user_data, roles=role_repository.all())
         
         try:
             user_repository.create(**user_data)
@@ -53,7 +53,7 @@ def new():
         except connector.errors.DatabaseError:
             flash('Произошла ошибка при создании записи. Проверьте, что все необходимые поля заполнены', 'danger')
             db.connect().rollback()
-    return render_template('users/new.html', user_data=user_data, roles=role_repository.all())
+    return render_template('users/new.html', password_error=None, login_error=None, user_data=user_data, roles=role_repository.all())
 
 @bp.route('/<int:user_id>/delete', methods = ['POST'])
 @login_required
@@ -81,7 +81,7 @@ def edit(user_id):
             flash('Произошла ошибка при изменении записи.', 'danger')
             db.connect().rollback()
             user = user_data
-    return render_template('users/edit.html', user_data=user, roles=role_repository.all())
+    return render_template('users/edit.html', password_error=None, login_error=None, user_data=user, roles=role_repository.all())
 
 @bp.route('/<int:user_id>/changepassword', methods = ['POST', 'GET'])
 @login_required
