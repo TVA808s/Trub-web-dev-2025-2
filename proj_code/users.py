@@ -56,11 +56,14 @@ def new():
             db.connect().rollback()
     return render_template('users/new.html', password_error=None, login_error=None, user_data=user_data, roles=role_repository.all())
 
-@bp.route('/<int:user_id>/delete', methods = ['DELETE'])
+@bp.route('/<int:user_id>/delete', methods = ['POST'])
 @login_required
 def delete(user_id):
-    user_repository.delete(user_id)
-    flash('Учетная запись успешно удалена', 'success')
+    try:
+        user_repository.delete(user_id)
+        flash('Учетная запись успешно удалена', 'success')
+    except Exception as e:
+        flash('Ошибка при удалении: {e}', 'danger')
     return redirect(url_for('users.index'))
 
 @bp.route('/<int:user_id>/edit', methods = ['POST', 'GET'])

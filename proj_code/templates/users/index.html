@@ -21,8 +21,16 @@
                 <a class="btn btn-primary" href="{{ url_for('users.show', user_id=user.id) }}"> Просмотр </a>
                 {% if current_user.is_authenticated %}
                     <a class="btn btn-primary" href="{{ url_for('users.edit', user_id=user.id) }}"> Редактирование </a>
-                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" 
-                        data-user-id="{{ user.id }}" data-delete-url="{{ url_for('users.delete', user_id=user.id) }}"> Удаление </button>
+                    <button type="button" 
+                            class="btn btn-danger" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#deleteModal"
+                            data-user-id="{{ user.id }}"
+                            data-last-name="{{ user.last_name }}"
+                            data-first-name="{{ user.first_name }}"
+                            data-middle-name="{{ user.middle_name }}">
+                        Удалить
+                    </button>
                 </td>
                 {% endif %}
             </tr>

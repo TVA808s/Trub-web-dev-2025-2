@@ -1,16 +1,18 @@
 'use strict';
 
 function modalShown(event) {
-    let button = event.relatedTarget;
-    let userId = button.dataset.userId;
-    let newUrl = `/users/${userId}/delete`;
-    let form = document.getElementById('deleteModalForm');
-    let row = button.closest('tr');
-    let lastName = row.querySelector('td:nth-child(3)').textContent;
-    let Name = row.querySelector('td:nth-child(4)').textContent;
-    let middleName = row.querySelector('td:nth-child(5)').textContent;
-    let modalUserName = document.getElementById('modalUserName');
-    modalUserName.textContent = lastName + " " + Name + " " + middleName;
+    const button = event.relatedTarget;
+    const userId = button.getAttribute('data-user-id');
+    const newUrl = `/users/${userId}/delete`;
+    const form = document.getElementById('deleteModalForm');
+    
+    // Получаем данные пользователя из data-атрибутов кнопки
+    const lastName = button.getAttribute('data-last-name');
+    const firstName = button.getAttribute('data-first-name');
+    const middleName = button.getAttribute('data-middle-name');
+    
+    const modalUserName = document.getElementById('modalUserName');
+    modalUserName.textContent = `${lastName} ${firstName} ${middleName}`;
     form.action = newUrl;
 }
 
