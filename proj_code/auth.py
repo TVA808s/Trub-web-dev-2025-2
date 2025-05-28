@@ -1,8 +1,8 @@
 from functools import wraps
 from flask import Blueprint, request, render_template, url_for, redirect, flash
 from flask_login  import LoginManager, UserMixin, current_user, login_user, logout_user, login_required
-from .repositories.user_repository import UserRepository
-from .db import db
+from proj_code.repositories.user_repository import UserRepository
+from proj_code.db import db
 
 user_repository = UserRepository(db)
 
