@@ -74,14 +74,18 @@ def edit(user_id):
     if request.method == 'POST':
         fields = ('first_name', 'middle_name', 'last_name', 'role_id')
         user_data = { field: request.form.get(field) or None for field in fields }
-        try:
-            user_repository.update(user_id, **user_data)
-            flash('Учетная запись успешно изменена', 'success')
-            return redirect(url_for('users.index'))
-        except connector.errors.DatabaseError:
-            flash('Произошла ошибка при изменении записи.', 'danger')
-            db.connect().rollback()
+        if user_data['first_name'] == None or user_data['middle_name'] == None:
+            flash('Имя и Отчество должны быть введены','danger')
             user = user_data
+        else:
+            try:
+                user_repository.update(user_id, **user_data)
+                flash('Учетная запись успешно изменена', 'success')
+                return redirect(url_for('users.index'))
+            except connector.errors.DatabaseError:
+                flash('Произошла ошибка при изменении записи.', 'danger')
+                db.connect().rollback()
+                user = user_data
     return render_template('users/edit.html', password_error=None, login_error=None, user_data=user, roles=role_repository.all())
 
 @bp.route('/<int:user_id>/changepassword', methods = ['POST', 'GET'])
