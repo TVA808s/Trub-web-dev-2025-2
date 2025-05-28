@@ -4,37 +4,28 @@
 
     <div class="mb-3">
         <label for="login" class="form-label">Логин</label>
-        <input type="text" name="username" id="login" class="form-control {% if not user_data.username or (val_error and val_error.startswith('Username')) %}is-invalid{% else %}is-valid{% endif %}" value="{{ user_data.username or ''}}">
+        <input type="text" name="username" id="login" class="form-control {% if login_error %}is-invalid{% else %}is-valid{% endif %}" value="{{ user_data.username or ''}}">
         {% if not user_data.username %}
             <div class="invalid-feedback">
-                Заполните имя пользователя!
-            </div>
-        {% elif val_error and val_error.startswith('Username') %}
-            <div class="invalid-feedback">
-               {{ val_error }}
+                {{login_error}}
             </div>
         {% else %}
             <div class="valid-feedback">
-                Все круто!
+                супер!
             </div>
         {% endif %}
     </div>
     <div class="mb-3">
         <label for="password" class="form-label">Пароль</label>
-        <input type="text" name="password" id="password" class="form-control {% if not user_data.password or (val_error and not val_error.startswith('Username'))%}is-invalid{% else %}is-valid{% endif %}" value="{{ user_data.password or ''}}">
-        {% if not user_data.password %}
+        <input type="password" name="password" id="password" class="form-control {% if password_error %}is-invalid{% else %}is-valid{% endif %}" value="{{ user_data.password or ''}}">
+        {% if password_error %}
             <div class="invalid-feedback">
-                Заполните пароль!
-            </div>
-        {% elif val_error and not val_error.startswith('Username') %}
-            <div class="invalid-feedback">
-               {{ val_error }}
+                {{password_error}}
             </div>
         {% else %}
             <div class="valid-feedback">
-                Все круто!
+               супер!
             </div>
-        {% endif %}
     </div>
     {% endif %}
     <div class="mb-3">
@@ -46,33 +37,24 @@
             </div>
         {% else %}
             <div class="valid-feedback">
-                Все круто!
+                супер!
             </div>
         {% endif %}
     </div>
     <div class="mb-3">
-        <label for="last_name" class="form-label">Фамилия</label>
-        <input type="text" name="last_name" id="last_name" class="form-control {% if not user_data.last_name %}is-invalid{% else %}is-valid{% endif %}" value="{{ user_data.last_name or ''}}">
-        {% if not user_data.last_name %}
-            <div class="invalid-feedback">
-                Заполните Вашу фамилию!
-            </div>
-        {% else %}
-            <div class="valid-feedback">
-                Все круто!
-            </div>
-        {% endif %}
+        <label for="last_name" class="form-label">Фамилия (необязательно)</label>
+        <input type="text" name="last_name" id="last_name" class="form-control" value="{{ user_data.last_name or ''}}">
     </div>
     <div class="mb-3">
-        <label for="middle_name" class="form-label">Отчество (опционально)</label>
+        <label for="middle_name" class="form-label">Отчество</label>
         <input type="text" name="middle_name" id="middle_name" class="form-control {% if not user_data.middle_name %}is-invalid{% else %}is-valid{% endif %}" value="{{ user_data.middle_name or ''}}">
         {% if not user_data.middle_name %}
             <div class="invalid-feedback">
-                Заполните Ваше отчество, если хотите!
+                Заполните Ваше отчество!
             </div>
         {% else %}
             <div class="valid-feedback">
-                Все круто!
+                супер!
             </div>
         {% endif %}
     </div>

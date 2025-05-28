@@ -2,6 +2,7 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import login_required, current_user
 import mysql.connector as connector
 from proj_code.validators.password_validator import password_validator
+from proj_code.validators.login_validator import login_validator
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from proj_code.repositories.user_repository import UserRepository
@@ -38,11 +39,12 @@ def new():
         fields = ('username', 'password', 'first_name', 'middle_name', 'last_name', 'role_id')
         user_data = { field: request.form.get(field) or None for field in fields }
         
-        validation_error = 'Username должен содержать хотя бы 4 символов!' if (user_data['username'] is None or len(user_data['username']) < 4) else password_validator(user_data['password']) 
+        login_error = login_validator(user_data['username']) or None
+        password_error = password_validator(user_data['password']) or None
         
-        if validation_error:
-            flash(validation_error, 'danger')
-            return render_template('users/new.html', user_data=user_data, roles=role_repository.all(), val_error=validation_error)
+        if password_error or login_error:
+            flash([password_error or '', login_error or ''], 'danger')
+            return render_template('users/new.html', user_data=user_data, roles=role_repository.all(), password_error=password_error, login_error=login_error)
         
         try:
             user_repository.create(**user_data)
