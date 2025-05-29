@@ -18,7 +18,7 @@
                 <td> {{ user.last_name }} {{ user.first_name }} {% if user.middle_name %} {{ user.middle_name }} {% endif %} </td>
                 <td> {{ user.role }} </td>
                 <td>
-                <a class="btn btn-primary" href="{{ url_for('users.get', user_id=user.id) }}"> Просмотр </a>
+                <a class="btn btn-primary" href="{{ url_for('users.getUser', user_id=user.id) }}"> Просмотр </a>
                 {% if current_user.is_authenticated %}
                     <a class="btn btn-primary" href="{{ url_for('users.updateName', user_id=user.id) }}"> Редактирование </a>
                     <button type="button" 
