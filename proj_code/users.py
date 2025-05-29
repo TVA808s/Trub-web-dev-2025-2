@@ -76,7 +76,7 @@ def getUser(user_id):
         flash('Пользователя нет в базе данных!', 'danger')
         return redirect(url_for('users.index'))
     user_role = role_repository.get_by_id(user.role_id)
-    return render_template('users/get.html', password_error=None, login_error=None, user_data=user, user_role=getattr(user_role, 'name', ''))
+    return render_template('users/getUser.html', password_error=None, login_error=None, user_data=user, user_role=getattr(user_role, 'name', ''))
 
 @bp.route('/create', methods = ['POST', 'GET'])
 @login_required
