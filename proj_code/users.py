@@ -78,7 +78,7 @@ def getUser(user_id):
     user_role = role_repository.get_by_id(user.role_id)
     return render_template('users/getUser.html', password_error=None, login_error=None, user_data=user, user_role=getattr(user_role, 'name', ''))
 
-@bp.route('/create', methods = ['POST', 'GET'])
+@bp.route('/createUser', methods = ['POST', 'GET'])
 @login_required
 def createUser():
     user_data = {}
@@ -92,7 +92,7 @@ def createUser():
         
         if password_error or login_error:
             flash([password_error or '', login_error or ''], 'danger')
-            return render_template('users/create.html', password_error=password_error, login_error=login_error, user_data=user_data, roles=role_repository.all())
+            return render_template('users/createUser.html', password_error=password_error, login_error=login_error, user_data=user_data, roles=role_repository.all())
         
         try:
             user_repository.create(**user_data)
@@ -101,7 +101,7 @@ def createUser():
         except connector.errors.DatabaseError:
             flash('Произошла ошибка при создании записи. Проверьте, что все необходимые поля заполнены', 'danger')
             db.connect().rollback()
-    return render_template('users/create.html', password_error=None, login_error=None, user_data=user_data, roles=role_repository.all())
+    return render_template('users/createUser.html', password_error=None, login_error=None, user_data=user_data, roles=role_repository.all())
 
 @bp.route('/<int:user_id>/delete', methods = ['POST'])
 @login_required
