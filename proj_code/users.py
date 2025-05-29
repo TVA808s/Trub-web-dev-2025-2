@@ -70,17 +70,17 @@ def index():
     return render_template('users/index.html', users=user_repository.all())
 
 @bp.route('/<int:user_id>')
-def show(user_id):
+def getUser(user_id):
     user = user_repository.get_by_id(user_id)
     if user is None:
         flash('Пользователя нет в базе данных!', 'danger')
         return redirect(url_for('users.index'))
     user_role = role_repository.get_by_id(user.role_id)
-    return render_template('users/show.html', password_error=None, login_error=None, user_data=user, user_role=getattr(user_role, 'name', ''))
+    return render_template('users/get.html', password_error=None, login_error=None, user_data=user, user_role=getattr(user_role, 'name', ''))
 
-@bp.route('/new', methods = ['POST', 'GET'])
+@bp.route('/create', methods = ['POST', 'GET'])
 @login_required
-def new():
+def createUser():
     user_data = {}
     if request.method == 'POST':
         fields = ('username', 'password', 'first_name', 'middle_name', 'last_name', 'role_id')
@@ -92,7 +92,7 @@ def new():
         
         if password_error or login_error:
             flash([password_error or '', login_error or ''], 'danger')
-            return render_template('users/new.html', password_error=password_error, login_error=login_error, user_data=user_data, roles=role_repository.all())
+            return render_template('users/create.html', password_error=password_error, login_error=login_error, user_data=user_data, roles=role_repository.all())
         
         try:
             user_repository.create(**user_data)
@@ -101,7 +101,7 @@ def new():
         except connector.errors.DatabaseError:
             flash('Произошла ошибка при создании записи. Проверьте, что все необходимые поля заполнены', 'danger')
             db.connect().rollback()
-    return render_template('users/new.html', password_error=None, login_error=None, user_data=user_data, roles=role_repository.all())
+    return render_template('users/create.html', password_error=None, login_error=None, user_data=user_data, roles=role_repository.all())
 
 @bp.route('/<int:user_id>/delete', methods = ['POST'])
 @login_required
@@ -113,9 +113,9 @@ def delete(user_id):
         flash('Ошибка при удалении: {e}', 'danger')
     return redirect(url_for('users.index'))
 
-@bp.route('/<int:user_id>/edit', methods = ['POST', 'GET'])
+@bp.route('/<int:user_id>/updateName', methods = ['POST', 'GET'])
 @login_required
-def edit(user_id):
+def updateName(user_id):
     user = user_repository.get_by_id(user_id)
     if user is None:
         flash('Пользователя нет в базе данных!', 'danger')
@@ -136,11 +136,11 @@ def edit(user_id):
                 flash('Произошла ошибка при изменении записи.', 'danger')
                 db.connect().rollback()
                 user = user_data
-    return render_template('users/edit.html', password_error=None, login_error=None, user_data=user, roles=role_repository.all())
+    return render_template('users/updateName.html', password_error=None, login_error=None, user_data=user, roles=role_repository.all())
 
-@bp.route('/<int:user_id>/changepassword', methods = ['POST', 'GET'])
+@bp.route('/<int:user_id>/updatePassword', methods = ['POST', 'GET'])
 @login_required
-def changepassword(user_id):
+def updatePassword(user_id):
     user = user_repository.get_by_id(user_id)
     old_password_validation = None
     passwords_not_matching = None
@@ -175,4 +175,4 @@ def changepassword(user_id):
                 db.connect().rollback()
 
           
-    return render_template('users/changepassword.html', password_error=password_error, old_password_validation=old_password_validation, passwords_not_matching=passwords_not_matching, user_data=user_data)
+    return render_template('users/updatePassword.html', password_error=password_error, old_password_validation=old_password_validation, passwords_not_matching=passwords_not_matching, user_data=user_data)
