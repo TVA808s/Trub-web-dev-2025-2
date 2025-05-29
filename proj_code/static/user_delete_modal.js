@@ -6,7 +6,7 @@ function modalShown(event) {
     const newUrl = `/users/${userId}/delete`;
     const form = document.getElementById('deleteModalForm');
     
-    // Получаем данные пользователя из data-атрибутов кнопки
+    // данные пользователя из data-атрибутов
     const lastName = button.getAttribute('data-last-name');
     const firstName = button.getAttribute('data-first-name');
     const middleName = button.getAttribute('data-middle-name');
