@@ -21,18 +21,27 @@ login_manager.login_message = 'Авторизуйтесь для доступа 
 login_manager.login_message_category = 'warning'
 
 
-def check_rights(func):
-    @wraps(func)
-    def decorated_function(*args, **kwargs):
-        if not current_user.is_authenticated:
-            flash('Войдите в аккаутн.', 'danger')
-            return redirect(url_for('users.login'))
-        user = user_repository.get_by_id(current_user.id)
-        if user.role_id != '1':
-            flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
-            return redirect(url_for('users.index'))
-        return func(*args, **kwargs)
-    return decorated_function
+def check_rights(req_role):
+    def decorator(func):
+        @wraps(func)
+        def decorated_function(*args, **kwargs):
+            if not current_user.is_authenticated:
+                flash('Войдите в аккаутн.', 'danger')
+                return redirect(url_for('users.login'))
+            
+            user = user_repository.get_by_id(current_user.id)
+            role = role_repository.get_by_id(user.role_id)
+            if not role:
+                flash('Доступ невозможен. Уточните у администратора.', 'danger')
+                return redirect(url_for('users.login'))
+            
+            if req_role == 'Администратор' and role != 'Администратор':
+                flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
+                return redirect(url_for('users.index'))
+            
+            return func(*args, **kwargs)
+        return decorated_function
+    return decorator
 
 
 class User(UserMixin):
@@ -87,19 +96,23 @@ def index():
 
 @bp.route('/<int:user_id>')
 @login_required
-@check_rights
 def getUser(user_id):
     user = user_repository.get_by_id(user_id)
     if user is None:
         flash('Пользователя нет в базе данных!', 'danger')
         return redirect(url_for('users.index'))
     user_role = role_repository.get_by_id(user.role_id)
+
+    if current_user.id != user_id and user_role != 'Администратор':
+        flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
+        return redirect(url_for('users.index'))
+    
     return render_template('users/getUser.html', password_error=None, login_error=None, user_data=user, user_role=getattr(user_role, 'name', ''))
 
 
 @bp.route('/createUser', methods = ['POST', 'GET'])
 @login_required
-@check_rights
+@check_rights('Администратор')
 def createUser():
     user_data = {}
     if request.method == 'POST':
@@ -125,7 +138,7 @@ def createUser():
 
 @bp.route('/<int:user_id>/delete', methods = ['POST'])
 @login_required
-@check_rights
+@check_rights('Администратор')
 def delete(user_id):
     try:
         user_repository.delete(user_id)
@@ -136,11 +149,16 @@ def delete(user_id):
 
 @bp.route('/<int:user_id>/updateName', methods = ['POST', 'GET'])
 @login_required
-@check_rights
+@check_rights('Администратор')
 def updateName(user_id):
     user = user_repository.get_by_id(user_id)
     if user is None:
         flash('Пользователя нет в базе данных!', 'danger')
+        return redirect(url_for('users.index'))
+    user_role = role_repository.get_by_id(user.role_id)
+
+    if current_user.id != user_id and user_role != 'Администратор':
+        flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
         return redirect(url_for('users.index'))
     
     if request.method == 'POST':
@@ -163,11 +181,13 @@ def updateName(user_id):
 @bp.route('/<int:user_id>/updatePassword', methods = ['POST', 'GET'])
 @login_required
 def updatePassword(user_id):
-    preuser = user_repository.get_by_id(current_user.id)
-    if preuser.role_id == '2' and current_user.id != user_id:
-        flash('У вас недостаточно прав для доступа к данной странице.')
-        return redirect('users.index')
     user = user_repository.get_by_id(user_id)
+    user_role = role_repository.get_by_id(user.role_id)
+
+    if current_user.id != user_id and user_role != 'Администратор':
+        flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
+        return redirect(url_for('users.index'))
+    
     old_password_validation = None
     passwords_not_matching = None
     password_error = None
