@@ -72,6 +72,7 @@
             </div>
         {% endif %}
     </div>
+    {% if roles %}
     <div class="mb-3">
         <label for="role_id" class="form-label">Роль</label>
         <select name="role_id" id="role_id" class="form-select">
@@ -83,6 +84,7 @@
             {% endfor %}
         </select>
     </div>
+    {% endif %}
     <button type="submit" class="btn btn-primary"> {% if action=='new' %} Создать {% else %} Сохранить {% endif %} </button>
 </form>
 {% endmacro %}

@@ -174,8 +174,10 @@ def updateName(user_id):
     if request.method == 'POST':
         if sender_role.name == 'Администратор':
             fields = ('first_name', 'middle_name', 'last_name', 'role_id')
+            roles = role_repository.all()
         else:
             fields = ('first_name', 'middle_name', 'last_name')
+            roles = None
         user_data = { field: request.form.get(field) or None for field in fields }
         if user_data['first_name'] == None or user_data['middle_name'] == None:
             flash('Имя и Отчество должны быть введены','danger')
@@ -189,7 +191,7 @@ def updateName(user_id):
                 flash('Произошла ошибка при изменении записи.', 'danger')
                 db.connect().rollback()
                 user = user_data
-    return render_template('users/updateName.html', password_error=None, login_error=None, user_data=user, roles=role_repository.all())
+    return render_template('users/updateName.html', password_error=None, login_error=None, user_data=user, roles=roles)
 
 @bp.route('/<int:user_id>/updatePassword', methods = ['POST', 'GET'])
 @login_required
