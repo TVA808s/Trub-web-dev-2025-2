@@ -9,7 +9,6 @@ from proj_code.repositories.user_repository import UserRepository
 from proj_code.repositories.role_repository import RoleRepository
 from proj_code.db import db
 
-from functools import wraps
 
 user_repository = UserRepository(db)
 role_repository = RoleRepository(db)
@@ -22,19 +21,18 @@ login_manager.login_message = 'Авторизуйтесь для доступа 
 login_manager.login_message_category = 'warning'
 
 
-def check_rights():
-    def decorator(func):
-        @wraps(func)
-        def decorated_function(*args, **kwargs):
-            if not current_user.is_authenticated:
-                return redirect('users.login')
-            user = user_repository.get_by_id(current_user.id)
-            if user.role != 'Администратор':
-                flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
-                return redirect('users.index')
-            return func(*args, **kwargs)
-        return decorated_function
-    return decorator
+def check_rights(func):
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated:
+            flash('Войдите в аккаутн.', 'danger')
+            return redirect(url_for('users.login'))
+        user = user_repository.get_by_id(current_user.id)
+        if user.role != '1':
+            flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
+            return redirect(url_for('users.index'))
+        return func(*args, **kwargs)
+    return decorated_function
 
 
 class User(UserMixin):
@@ -101,7 +99,7 @@ def getUser(user_id):
 
 
 @bp.route('/createUser', methods = ['POST', 'GET'])
-@check_rights()
+@check_rights
 def createUser():
     user_data = {}
     if request.method == 'POST':
@@ -163,6 +161,9 @@ def updateName(user_id):
 @bp.route('/<int:user_id>/updatePassword', methods = ['POST', 'GET'])
 @login_required
 def updatePassword(user_id):
+    if user_repository.get_by_id(current_user.id).role == 'Пользователь' and current_user.id != user_id:
+        flash('У вас недостаточно прав для доступа к данной странице.')
+        return redirect('users.index')
     user = user_repository.get_by_id(user_id)
     old_password_validation = None
     passwords_not_matching = None
