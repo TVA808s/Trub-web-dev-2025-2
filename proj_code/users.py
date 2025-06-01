@@ -86,10 +86,9 @@ def index():
     return render_template('users/index.html', users=user_repository.all())
 
 @bp.route('/<int:user_id>')
+@login_required
+@check_rights
 def getUser(user_id):
-    if user_repository.get_by_id(current_user.id).role == 'Пользователь' and current_user.id != user_id:
-        flash('У вас недостаточно прав для доступа к данной странице.')
-        return redirect('users.index')
     user = user_repository.get_by_id(user_id)
     if user is None:
         flash('Пользователя нет в базе данных!', 'danger')
@@ -99,6 +98,7 @@ def getUser(user_id):
 
 
 @bp.route('/createUser', methods = ['POST', 'GET'])
+@login_required
 @check_rights
 def createUser():
     user_data = {}
@@ -124,6 +124,7 @@ def createUser():
     return render_template('users/createUser.html', password_error=None, login_error=None, user_data=user_data, roles=role_repository.all())
 
 @bp.route('/<int:user_id>/delete', methods = ['POST'])
+@login_required
 @check_rights
 def delete(user_id):
     try:
@@ -134,6 +135,7 @@ def delete(user_id):
     return redirect(url_for('users.index'))
 
 @bp.route('/<int:user_id>/updateName', methods = ['POST', 'GET'])
+@login_required
 @check_rights
 def updateName(user_id):
     user = user_repository.get_by_id(user_id)
