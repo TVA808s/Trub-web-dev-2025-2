@@ -18,7 +18,7 @@
                 <td> {{ user.last_name }} {{ user.first_name }} {% if user.middle_name %} {{ user.middle_name }} {% endif %} </td>
                 <td> {{ user.role }} </td>
                 <td>
-                {% if not admin and current_user.id == user.id}
+                {% if not admin and current_user.id == user.id %}
                 <a class="btn btn-primary" href="{{ url_for('users.getUser', user_id=user.id) }}"> Просмотр </a>
                 {% endif %}
 
