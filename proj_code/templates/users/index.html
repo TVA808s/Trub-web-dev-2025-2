@@ -20,6 +20,7 @@
                 <td>
                 {% if not admin and current_user.id == user.id %}
                 <a class="btn btn-primary" href="{{ url_for('users.getUser', user_id=user.id) }}"> Просмотр </a>
+                <a class="btn btn-primary" href="{{ url_for('users.updateName', user_id=user.id) }}"> Редактирование </a>
                 {% endif %}
 
                 {% if admin %}
