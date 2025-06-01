@@ -167,6 +167,7 @@ def updateName(user_id):
         flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
         return redirect(url_for('users.index'))
     
+    roles = None
     user = user_repository.get_by_id(user_id)
     if user is None:
         flash('Пользователя нет в базе данных!', 'danger')
@@ -177,7 +178,6 @@ def updateName(user_id):
             roles = role_repository.all()
         else:
             fields = ('first_name', 'middle_name', 'last_name')
-            roles = None
         user_data = { field: request.form.get(field) or None for field in fields }
         if user_data['first_name'] == None or user_data['middle_name'] == None:
             flash('Имя и Отчество должны быть введены','danger')
