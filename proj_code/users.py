@@ -9,6 +9,8 @@ from proj_code.repositories.user_repository import UserRepository
 from proj_code.repositories.role_repository import RoleRepository
 from proj_code.db import db
 
+from functools import wraps
+
 user_repository = UserRepository(db)
 role_repository = RoleRepository(db)
 
@@ -18,6 +20,22 @@ login_manager = LoginManager()
 login_manager.login_view = 'users.login'
 login_manager.login_message = 'Авторизуйтесь для доступа к ресурсу.'
 login_manager.login_message_category = 'warning'
+
+
+def check_rights():
+    def decorator(func):
+        @wraps(func)
+        def decorated_function(*args, **kwargs):
+            if not current_user.is_authenticated:
+                return redirect('users.login')
+            user = user_repository.get_by_id(current_user.id)
+            if user.role != 'Администратор':
+                flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
+                return redirect('users.index')
+            return func(*args, **kwargs)
+        return decorated_function
+    return decorator
+
 
 class User(UserMixin):
     def __init__(self, user_id, login):
@@ -71,6 +89,9 @@ def index():
 
 @bp.route('/<int:user_id>')
 def getUser(user_id):
+    if user_repository.get_by_id(current_user.id).role == 'Пользователь' and current_user.id != user_id:
+        flash('У вас недостаточно прав для доступа к данной странице.')
+        return redirect('users.index')
     user = user_repository.get_by_id(user_id)
     if user is None:
         flash('Пользователя нет в базе данных!', 'danger')
@@ -78,8 +99,9 @@ def getUser(user_id):
     user_role = role_repository.get_by_id(user.role_id)
     return render_template('users/getUser.html', password_error=None, login_error=None, user_data=user, user_role=getattr(user_role, 'name', ''))
 
+
 @bp.route('/createUser', methods = ['POST', 'GET'])
-@login_required
+@check_rights()
 def createUser():
     user_data = {}
     if request.method == 'POST':
@@ -104,7 +126,7 @@ def createUser():
     return render_template('users/createUser.html', password_error=None, login_error=None, user_data=user_data, roles=role_repository.all())
 
 @bp.route('/<int:user_id>/delete', methods = ['POST'])
-@login_required
+@check_rights
 def delete(user_id):
     try:
         user_repository.delete(user_id)
@@ -114,7 +136,7 @@ def delete(user_id):
     return redirect(url_for('users.index'))
 
 @bp.route('/<int:user_id>/updateName', methods = ['POST', 'GET'])
-@login_required
+@check_rights
 def updateName(user_id):
     user = user_repository.get_by_id(user_id)
     if user is None:
@@ -164,7 +186,7 @@ def updatePassword(user_id):
             passwords_not_matching = "Пароли не совпадают!"
 
         password_error = password_validator(user_data['new_password'])
-                    
+
         if not password_error and not passwords_not_matching and not old_password_validation:
             try:
                 user_repository.change_password(user_id, user_data["new_password"])
@@ -174,5 +196,5 @@ def updatePassword(user_id):
                 flash('Произошла ошибка при изменении пароля.', 'danger')
                 db.connect().rollback()
 
-          
+
     return render_template('users/updatePassword.html', password_error=password_error, old_password_validation=old_password_validation, passwords_not_matching=passwords_not_matching, user_data=user_data)

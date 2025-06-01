@@ -64,3 +64,8 @@ def test_delete_user(user_repository, existing_user):
     user_repository.delete(existing_user.id)
     deleted_user = user_repository.get_by_id(existing_user.id)
     assert deleted_user is None
+
+def test_change_password(user_repository, existing_user):
+    user_repository.change_password(existing_user.id, 'Password1337')
+    assert user_repository.validate_password(existing_user.id, 'Password1337') is not None
+

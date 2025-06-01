@@ -21,7 +21,8 @@ CREATE TABLE users (
 
 
 insert into roles (id, name, description) values 
-    (1, 'admin', 'papachka');
+    (1, 'Администратор', 'папачка'),
+    (2, 'Пользователь', 'нормис');
     
 INSERT INTO users (
     username,
@@ -31,10 +32,18 @@ INSERT INTO users (
     middle_name,
     role_id
 ) VALUES (
-    'test_user',
-    '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8',
-    'test',
-    'tes',
-    'te',
+    'admin_user',
+    '19513fdc9da4fb72a4a05eb66917548d3c90ff94d5419e1f2363eea89dfee1dd',
+    'awaw',
+    'rer',
+    'xx',
     1
+),
+    (
+    'simple_user',
+    '19513fdc9da4fb72a4a05eb66917548d3c90ff94d5419e1f2363eea89dfee1dd',
+    'pwq',
+    'awd',
+    'ppp',
+    2
 );

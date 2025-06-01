@@ -78,7 +78,7 @@ def auto_cleanup(db_connector):
         cursor.execute("DELETE FROM roles;")
         connection.commit()
     yield
-#gugu
+
 @pytest.fixture
 def existing_role(db_connector):
     data = (1, 'зз', 'ооо')
