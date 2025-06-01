@@ -104,6 +104,7 @@ def getUser(user_id):
         return redirect(url_for('users.index'))
     
     user = user_repository.get_by_id(user_id)
+    user_role = role_repository.get_by_id(user.role_id)
     if user is None:
         flash('Пользователя нет в базе данных!', 'danger')
         return redirect(url_for('users.index'))
