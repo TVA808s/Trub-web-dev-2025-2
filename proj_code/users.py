@@ -97,16 +97,16 @@ def index():
 @bp.route('/<int:user_id>')
 @login_required
 def getUser(user_id):
+    sender = user_repository.get_by_id(current_user.id)
+    sender_role = role_repository.get_by_id(sender.role_id)
+    if current_user.id != user_id and sender_role != 'Администратор':
+        flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
+        return redirect(url_for('users.index'))
+    
     user = user_repository.get_by_id(user_id)
     if user is None:
         flash('Пользователя нет в базе данных!', 'danger')
         return redirect(url_for('users.index'))
-    user_role = role_repository.get_by_id(user.role_id)
-
-    if current_user.id != user_id and user_role != 'Администратор':
-        flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
-        return redirect(url_for('users.index'))
-    
     return render_template('users/getUser.html', password_error=None, login_error=None, user_data=user, user_role=getattr(user_role, 'name', ''))
 
 
@@ -150,18 +150,22 @@ def delete(user_id):
 @bp.route('/<int:user_id>/updateName', methods = ['POST', 'GET'])
 @login_required
 def updateName(user_id):
+    sender = user_repository.get_by_id(current_user.id)
+    sender_role = role_repository.get_by_id(sender.role_id)
+    if current_user.id != user_id and sender_role != 'Администратор':
+        flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
+        return redirect(url_for('users.index'))
+
+    if current_user.id != user_id and sender_role != 'Администратор':
+        flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
+        return redirect(url_for('users.index'))
+    
     user = user_repository.get_by_id(user_id)
     if user is None:
         flash('Пользователя нет в базе данных!', 'danger')
         return redirect(url_for('users.index'))
-    user_role = role_repository.get_by_id(user.role_id)
-
-    if current_user.id != user_id and user_role != 'Администратор':
-        flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
-        return redirect(url_for('users.index'))
-    
     if request.method == 'POST':
-        if user_role == 'Администратор':
+        if sender_role == 'Администратор':
             fields = ('first_name', 'middle_name', 'last_name', 'role_id')
         else:
             fields = ('first_name', 'middle_name', 'last_name')
@@ -183,22 +187,21 @@ def updateName(user_id):
 @bp.route('/<int:user_id>/updatePassword', methods = ['POST', 'GET'])
 @login_required
 def updatePassword(user_id):
-    user = user_repository.get_by_id(user_id)
-    user_role = role_repository.get_by_id(user.role_id)
-
-    if current_user.id != user_id and user_role != 'Администратор':
+    sender = user_repository.get_by_id(current_user.id)
+    sender_role = role_repository.get_by_id(sender.role_id)
+    if current_user.id != user_id and sender_role != 'Администратор':
         flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
+        return redirect(url_for('users.index'))
+    
+    user = user_repository.get_by_id(user_id)
+    if user is None:
+        flash('Пользователя нет в базе данных!', 'danger')
         return redirect(url_for('users.index'))
     
     old_password_validation = None
     passwords_not_matching = None
     password_error = None
     user_data = {}
-    
-    if user is None:
-        flash('Пользователя нет в базе данных!', 'danger')
-        return redirect(url_for('users.index'))
-    
     if request.method == 'POST':
         fields = ('old_password', 'new_password', 'new_password_r')
         user_data = { field: request.form.get(field) or None for field in fields }
