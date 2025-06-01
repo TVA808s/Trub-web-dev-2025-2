@@ -92,10 +92,6 @@ def handler():
 
 @bp.route('/')
 def index():
-    return render_template('users/index.html', )
-
-@bp.route('/')
-def index():
     sender = user_repository.get_by_id(current_user.id)
     sender_role = role_repository.get_by_id(sender.role_id)
     if sender_role.name == 'Администратор':
