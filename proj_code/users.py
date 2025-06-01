@@ -56,6 +56,15 @@ def load_user(user_id):
         return User(user.id, user.username)
     return None
 
+@bp.route('/')
+def index():
+    sender = user_repository.get_by_id(current_user.id)
+    sender_role = role_repository.get_by_id(sender.role_id)
+    if sender_role.name == 'Администратор':
+        admin = True
+    else:
+        admin = False
+    return render_template('users/index.html', admin=admin)
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -162,7 +171,7 @@ def updateName(user_id):
         flash('Пользователя нет в базе данных!', 'danger')
         return redirect(url_for('users.index'))
     if request.method == 'POST':
-        if sender_role == 'Администратор':
+        if sender_role.name == 'Администратор':
             fields = ('first_name', 'middle_name', 'last_name', 'role_id')
         else:
             fields = ('first_name', 'middle_name', 'last_name')

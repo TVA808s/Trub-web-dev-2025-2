@@ -18,8 +18,12 @@
                 <td> {{ user.last_name }} {{ user.first_name }} {% if user.middle_name %} {{ user.middle_name }} {% endif %} </td>
                 <td> {{ user.role }} </td>
                 <td>
+                {% if not admin and current_user.id == user.id}
                 <a class="btn btn-primary" href="{{ url_for('users.getUser', user_id=user.id) }}"> Просмотр </a>
-                {% if current_user.is_authenticated %}
+                {% endif %}
+
+                {% if admin %}
+                    <a class="btn btn-primary" href="{{ url_for('users.getUser', user_id=user.id) }}"> Просмотр </a>
                     <a class="btn btn-primary" href="{{ url_for('users.updateName', user_id=user.id) }}"> Редактирование </a>
                     <button type="button" 
                             class="btn btn-danger" 
@@ -37,7 +41,7 @@
             {% endfor %}
         </tbody>
     </table>
-    {% if current_user.is_authenticated %}
+    {% if admin %}
     <a href="{{ url_for('users.createUser') }}" class="btn btn-primary">Добавить пользователя</a>
     {% endif %}
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
