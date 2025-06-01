@@ -149,7 +149,6 @@ def delete(user_id):
 
 @bp.route('/<int:user_id>/updateName', methods = ['POST', 'GET'])
 @login_required
-@check_rights('Администратор')
 def updateName(user_id):
     user = user_repository.get_by_id(user_id)
     if user is None:
@@ -162,7 +161,10 @@ def updateName(user_id):
         return redirect(url_for('users.index'))
     
     if request.method == 'POST':
-        fields = ('first_name', 'middle_name', 'last_name', 'role_id')
+        if user_role == 'Администратор':
+            fields = ('first_name', 'middle_name', 'last_name', 'role_id')
+        else:
+            fields = ('first_name', 'middle_name', 'last_name')
         user_data = { field: request.form.get(field) or None for field in fields }
         if user_data['first_name'] == None or user_data['middle_name'] == None:
             flash('Имя и Отчество должны быть введены','danger')
