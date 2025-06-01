@@ -28,7 +28,7 @@ def check_rights(func):
             flash('Войдите в аккаутн.', 'danger')
             return redirect(url_for('users.login'))
         user = user_repository.get_by_id(current_user.id)
-        if user.role != '1':
+        if user.role_id != '1':
             flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
             return redirect(url_for('users.index'))
         return func(*args, **kwargs)
@@ -163,7 +163,8 @@ def updateName(user_id):
 @bp.route('/<int:user_id>/updatePassword', methods = ['POST', 'GET'])
 @login_required
 def updatePassword(user_id):
-    if user_repository.get_by_id(current_user.id).role == 'Пользователь' and current_user.id != user_id:
+    preuser = user_repository.get_by_id(current_user.id)
+    if preuser.role_id == '2' and current_user.id != user_id:
         flash('У вас недостаточно прав для доступа к данной странице.')
         return redirect('users.index')
     user = user_repository.get_by_id(user_id)
