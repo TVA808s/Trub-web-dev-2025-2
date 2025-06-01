@@ -56,15 +56,6 @@ def load_user(user_id):
         return User(user.id, user.username)
     return None
 
-@bp.route('/')
-def index():
-    sender = user_repository.get_by_id(current_user.id)
-    sender_role = role_repository.get_by_id(sender.role_id)
-    if sender_role.name == 'Администратор':
-        admin = True
-    else:
-        admin = False
-    return render_template('users/index.html', admin=admin)
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -101,7 +92,20 @@ def handler():
 
 @bp.route('/')
 def index():
-    return render_template('users/index.html', users=user_repository.all())
+    return render_template('users/index.html', )
+
+@bp.route('/')
+def index():
+    sender = user_repository.get_by_id(current_user.id)
+    sender_role = role_repository.get_by_id(sender.role_id)
+    if sender_role.name == 'Администратор':
+        admin = True
+    else:
+        admin = False
+    return render_template('users/index.html', admin=admin, users=user_repository.all())
+
+
+
 
 @bp.route('/<int:user_id>')
 @login_required
