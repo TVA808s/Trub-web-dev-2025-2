@@ -35,7 +35,7 @@ def check_rights(req_role):
                 flash('Доступ невозможен. Уточните у администратора.', 'danger')
                 return redirect(url_for('users.login'))
             
-            if req_role == 'Администратор' and role != 'Администратор':
+            if req_role == 'Администратор' and role.name != 'Администратор':
                 flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
                 return redirect(url_for('users.index'))
             
@@ -99,7 +99,7 @@ def index():
 def getUser(user_id):
     sender = user_repository.get_by_id(current_user.id)
     sender_role = role_repository.get_by_id(sender.role_id)
-    if current_user.id != user_id and sender_role != 'Администратор':
+    if current_user.id != user_id and sender_role.name != 'Администратор':
         flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
         return redirect(url_for('users.index'))
     
@@ -153,11 +153,7 @@ def delete(user_id):
 def updateName(user_id):
     sender = user_repository.get_by_id(current_user.id)
     sender_role = role_repository.get_by_id(sender.role_id)
-    if current_user.id != user_id and sender_role != 'Администратор':
-        flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
-        return redirect(url_for('users.index'))
-
-    if current_user.id != user_id and sender_role != 'Администратор':
+    if current_user.id != user_id and sender_role.name != 'Администратор':
         flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
         return redirect(url_for('users.index'))
     
@@ -190,7 +186,7 @@ def updateName(user_id):
 def updatePassword(user_id):
     sender = user_repository.get_by_id(current_user.id)
     sender_role = role_repository.get_by_id(sender.role_id)
-    if current_user.id != user_id and sender_role != 'Администратор':
+    if current_user.id != user_id and sender_role.name != 'Администратор':
         flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
         return redirect(url_for('users.index'))
     
