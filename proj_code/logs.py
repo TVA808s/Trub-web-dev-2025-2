@@ -65,7 +65,7 @@ def users_stat():
         return Response(
             csv_data,
             mimetype="text/csv; charset=utf-8",
-            headers={"Content-disposition": "attachment; filename=users_stat.csv"}
+            headers={"Content-disposition": "attachment; Content-Type:text; charset=utf-8; filename=users_stat.csv"}
         )
     
     return render_template('logs/usersStat.html', logs=stats)
