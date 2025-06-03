@@ -57,36 +57,35 @@ class LogRepository:
         return logs, total
 
     def get_pages_stat(self):
-        """Статистика посещений по страницам"""
-        query = """
+        with self.db_connector.connect().cursor(named_tuple=True) as cursor:
+            query = """
             SELECT path, COUNT(*) as count 
-            FROM logs 
+            FROM visit_logs 
             GROUP BY path 
             ORDER BY count DESC
-        """
-        with self.db.get_connection() as conn:
-            with conn.cursor(dictionary=True) as cursor:
-                cursor.execute(query)
-                return cursor.fetchall()
+            """
+            cursor.execute(query)
+            page_stats = cursor.fetchall()
+        return page_stats
 
     def get_users_stat(self):
-        """Статистика посещений по пользователям"""
-        query = """
+        with self.db_connector.connect().cursor(named_tuple=True) as cursor:
+            query = """
             SELECT 
                 user_id,
-                CONCAT(users.last_name, ' ', users.first_name, ' ', COALESCE(users.middle_name, '')) as full_name,
+                CASE
+                    WHEN user_id IS NULL THEN 'Неаутентифицированный пользователь'
+                    ELSE CONCAT_WS(' ', users.last_name, users.first_name, COALESCE(users.middle_name, ''))
+                END as full_name,
                 COUNT(*) as count
-            FROM logs
-            LEFT JOIN users ON logs.user_id = users.id
+            FROM visit_logs
+            LEFT JOIN users ON visit_logs.user_id = users.id
             GROUP BY user_id
             ORDER BY count DESC
-        """
-        with self.db.get_connection() as conn:
-            with conn.cursor(dictionary=True) as cursor:
-                cursor.execute(query)
-                result = cursor.fetchall()
-                # Обработка неаутентифицированных пользователей
-                for row in result:
-                    if row['user_id'] is None:
-                        row['full_name'] = "Неаутентифицированный пользователь"
-                return result
+            """
+            cursor.execute(query)
+            user_stats = cursor.fetchall()
+            for row in user_stats:
+                if row['user_id'] is None:
+                    row['full_name'] = "Неаутентифицированный пользователь"
+        return user_stats
