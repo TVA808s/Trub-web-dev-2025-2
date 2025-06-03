@@ -36,10 +36,8 @@ def visit_log():
 @bp.route('/pages_stat')
 @login_required
 def pages_stat():
-    """Статистика посещений по страницам"""
     stats = log_repository.get_pages_stat()
-    
-    # Обработка экспорта в CSV
+
     if request.args.get('export') == '1':
         csv_data = "№,Страница,Количество посещений\n"
         for i, row in enumerate(stats, 1):
@@ -54,18 +52,16 @@ def pages_stat():
 @bp.route('/users_stat')
 @login_required
 def users_stat():
-    """Статистика посещений по пользователям"""
     stats = log_repository.get_users_stat()
-    
-    # Обработка экспорта в CSV
+
     if request.args.get('export') == '1':
         csv_data = "№,Пользователь,Количество посещений\n"
         for i, row in enumerate(stats, 1):
             csv_data += f"{i},{row.full_name},{row.count}\n"  
         return Response(
             csv_data,
-            mimetype="text/csv; charset=utf-8",
-            headers={"Content-disposition": "attachment; Content-Type:text; charset=utf-8; filename=users_stat.csv"}
+            mimetype="text/csv",
+            headers={"Content-disposition": "attachment; filename=users_stat.csv; charset=utf-8"}
         )
     
     return render_template('logs/usersStat.html', logs=stats)

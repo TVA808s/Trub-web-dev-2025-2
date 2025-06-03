@@ -12,13 +12,12 @@ class LogRepository:
     def get_all_logs(self, page=1, per_page=10):
         offset = (page - 1) * per_page
         with self.db_connector.connect().cursor(named_tuple=True) as cursor:
-            # Основной запрос с пагинацией
             query = """
             SELECT 
                 vl.id, 
                 vl.path, 
                 vl.created_at,
-                CONCAT(u.last_name, ' ', u.first_name, ' ', u.middle_name) AS user_full_name
+                CONCAT_WS(' ', u.last_name, u.first_name, u.middle_name) AS user_full_name
             FROM visit_logs vl
             LEFT JOIN users u ON vl.user_id = u.id
             ORDER BY vl.created_at DESC
@@ -27,7 +26,6 @@ class LogRepository:
             cursor.execute(query, (per_page, offset))
             logs = cursor.fetchall()
             
-            # Получение общего количества записей для пагинации
             cursor.execute("SELECT COUNT(*) AS total FROM visit_logs")
             total = cursor.fetchone().total
             
@@ -75,11 +73,11 @@ class LogRepository:
                 user_id,
                 CASE
                     WHEN user_id IS NULL THEN 'Неаутентифицированный пользователь'
-                    ELSE CONCAT_WS(' ', users.last_name, users.first_name, COALESCE(users.middle_name, ''))
+                    ELSE CONCAT_WS(' ', u.last_name, u.first_name, u.middle_name)
                 END as full_name,
                 COUNT(*) as count
-            FROM visit_logs
-            LEFT JOIN users ON visit_logs.user_id = users.id
+            FROM visit_logs vl
+            LEFT JOIN users u ON vl.user_id = u.id
             GROUP BY user_id
             ORDER BY count DESC
             """

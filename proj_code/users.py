@@ -101,9 +101,6 @@ def index():
                 admin = True
     return render_template('users/index.html', admin=admin, users=user_repository.all())
 
-
-
-
 @bp.route('/<int:user_id>')
 @login_required
 def getUser(user_id):

@@ -29,6 +29,7 @@ def create_app(test_config=None):
     from proj_code.logs import bp as logs_bp, visit_log
     app.register_blueprint(logs_bp)
 
+    
     @app.before_request
     def log_visit():
         if request.path.startswith('/static'):
