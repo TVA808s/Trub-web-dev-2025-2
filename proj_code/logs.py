@@ -20,7 +20,7 @@ def visit_log():
     if current_user.id == 'Администратор':
         logs, total = log_repository.get_all_logs(page, per_page)
     else:
-        logs, total = log_repository.get_all_logs(current_user.id, page, per_page)
+        logs, total = log_repository.get_user_logs(current_user.id, page, per_page)
     return render_template(
         'visit_log.html',
         logs=logs,
