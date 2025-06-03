@@ -1,7 +1,7 @@
 # app.py
 import os
 from flask import Flask, session, request
-from flask_login import current_user
+from flask_login import current_user, login_required
 from proj_code.db import db
 from proj_code.repositories.log_repository import LogRepository
 
@@ -28,7 +28,9 @@ def create_app(test_config=None):
     app.add_url_rule('/', 'index', index)
     from proj_code.logs import bp as logs_bp, visit_log
     app.register_blueprint(logs_bp)
+
     @app.before_request
+    @login_required
     def log_visit():
         if request.path.startswith('/static'):
             return
