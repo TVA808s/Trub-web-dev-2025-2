@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, redirect, render_template, request, url_for, Response
 from flask_login import LoginManager, UserMixin, current_user, login_user, logout_user, login_required
 import mysql.connector as connector
 from proj_code.validators.password_validator import password_validator
@@ -32,3 +32,41 @@ def visit_log():
         per_page=per_page,
         total=total
     )
+
+@bp.route('/pages_stat')
+@login_required
+def pages_stat():
+    """Статистика посещений по страницам"""
+    stats = log_repository.get_pages_stat()
+    
+    # Обработка экспорта в CSV
+    if request.args.get('export') == '1':
+        csv_data = "№;Страница;Количество посещений\n"
+        for i, row in enumerate(stats, 1):
+            csv_data += f"{i};{row['path']};{row['count']}\n"
+        return Response(
+            csv_data,
+            mimetype="text/csv",
+            headers={"Content-disposition": "attachment; filename=pages_stat.csv"}
+        )
+    
+    return render_template('logs/pagesStat.html', logs=stats)
+
+@bp.route('/users_stat')
+@login_required
+def users_stat():
+    """Статистика посещений по пользователям"""
+    stats = log_repository.get_users_stat()
+    
+    # Обработка экспорта в CSV
+    if request.args.get('export') == '1':
+        csv_data = "№;Пользователь;Количество посещений\n"
+        for i, row in enumerate(stats, 1):
+            csv_data += f"{i};{row['full_name']};{row['count']}\n"
+        return Response(
+            csv_data,
+            mimetype="text/csv",
+            headers={"Content-disposition": "attachment; filename=users_stat.csv"}
+        )
+    
+    return render_template('logs/usersStat.html', logs=stats)

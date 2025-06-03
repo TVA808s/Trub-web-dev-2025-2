@@ -51,5 +51,13 @@
     </ul>
 </nav>
 
+<div class="mb-4">
+    <a href="{{ url_for('logs.pages_stat') }}" class="btn btn-outline-primary mr-2">
+        Статистика по страницам
+    </a>
+    <a href="{{ url_for('logs.users_stat') }}" class="btn btn-outline-primary">
+        Статистика по пользователям
+    </a>
+</div>
 
 {% endblock %}

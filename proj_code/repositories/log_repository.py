@@ -55,3 +55,38 @@ class LogRepository:
             total = cursor.fetchone().total
             
         return logs, total
+
+    def get_pages_stat(self):
+        """Статистика посещений по страницам"""
+        query = """
+            SELECT path, COUNT(*) as count 
+            FROM logs 
+            GROUP BY path 
+            ORDER BY count DESC
+        """
+        with self.db.get_connection() as conn:
+            with conn.cursor(dictionary=True) as cursor:
+                cursor.execute(query)
+                return cursor.fetchall()
+
+    def get_users_stat(self):
+        """Статистика посещений по пользователям"""
+        query = """
+            SELECT 
+                user_id,
+                CONCAT(users.last_name, ' ', users.first_name, ' ', COALESCE(users.middle_name, '')) as full_name,
+                COUNT(*) as count
+            FROM logs
+            LEFT JOIN users ON logs.user_id = users.id
+            GROUP BY user_id
+            ORDER BY count DESC
+        """
+        with self.db.get_connection() as conn:
+            with conn.cursor(dictionary=True) as cursor:
+                cursor.execute(query)
+                result = cursor.fetchall()
+                # Обработка неаутентифицированных пользователей
+                for row in result:
+                    if row['user_id'] is None:
+                        row['full_name'] = "Неаутентифицированный пользователь"
+                return result

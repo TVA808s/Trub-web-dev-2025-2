@@ -1,23 +1,25 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Посещения пользователей</h2> 
+<h2>Посещения пользователей</h2>
 <table class="table">
     <thead>
         <tr>
             <th>№</th>
             <th>Пользователь</th>
-            <th>Посещений</th>
+            <th>Количество посещений</th>
         </tr>
     </thead>
     <tbody>
-        <!-- {% for log in logs %}
+        {% for log in logs %}
         <tr>
-            <td> {{ log.id}} </td>
-            {% if log.user_id %} <td> {{ log.user_id }} </td>{% else %} <td>Неаутентифицированный пользователь</td> {% endif %}
-            <td> ф </td> -->
-        <!-- </tr> -->
+            <td>{{ loop.index }}</td>
+            <td>{{ log.full_name }}</td>
+            <td>{{ log.count }}</td>
+        </tr>
+        {% endfor %}
     </tbody>
 </table>
-
-<button>Экспорт в CVS</button>
+<a href="{{ url_for('logs.users_stat', export=1) }}" class="btn btn-primary">
+    Экспорт в CSV
+</a>
 {% endblock %}

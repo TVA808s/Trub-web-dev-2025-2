@@ -6,17 +6,20 @@
         <tr>
             <th>№</th>
             <th>Страница</th>
-            <th>Посещений</th>
+            <th>Количество посещений</th>
         </tr>
     </thead>
     <tbody>
-        <!-- {% for log in logs %}
+        {% for log in logs %}
         <tr>
-            <td> {{ log.id}} </td>
-            <td> {{ log.path }} </td>
-            <td> ф </td>
-        </tr> -->
+            <td>{{ loop.index }}</td>
+            <td>{{ log.path }}</td>
+            <td>{{ log.count }}</td>
+        </tr>
+        {% endfor %}
     </tbody>
 </table>
-<button>Экспорт в CVS</button>
+<a href="{{ url_for('logs.pages_stat', export=1) }}" class="btn btn-primary">
+    Экспорт в CSV
+</a>
 {% endblock %}
