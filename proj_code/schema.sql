@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS roles;
+DROP TABLE IF EXISTS visit_logs;
 
 CREATE TABLE roles (
     id INT PRIMARY KEY,
@@ -23,7 +24,7 @@ create table visit_logs (
     id INT PRIMARY KEY AUTO_INCREMENT,
     path VARCHAR(100) NOT NULL,
     user_id INT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 ) ENGINE INNODB;
 
