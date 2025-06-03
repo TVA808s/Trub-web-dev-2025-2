@@ -30,11 +30,12 @@ def create_app(test_config=None):
     app.register_blueprint(logs_bp)
 
     @app.before_request
-    @login_required
     def log_visit():
         if request.path.startswith('/static'):
             return
-        user_id = current_user.id if current_user.is_authenticated else None
+        user_id = None
+        if current_user.is_authenticated:
+            user_id = current_user.id 
         logs_repo = LogRepository(db)
         logs_repo.create_log(request.path, user_id)
 
