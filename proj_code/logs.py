@@ -43,13 +43,12 @@ def pages_stat():
     if request.args.get('export') == '1':
         csv_data = "№;Страница;Количество посещений\n"
         for i, row in enumerate(stats, 1):
-            csv_data += f"{i};{row['path']};{row['count']}\n"
+            csv_data += f"{i};{row.path};{row.count}\n"  
         return Response(
             csv_data,
             mimetype="text/csv",
             headers={"Content-disposition": "attachment; filename=pages_stat.csv"}
         )
-    
     return render_template('logs/pagesStat.html', logs=stats)
 
 @bp.route('/users_stat')
@@ -62,7 +61,7 @@ def users_stat():
     if request.args.get('export') == '1':
         csv_data = "№;Пользователь;Количество посещений\n"
         for i, row in enumerate(stats, 1):
-            csv_data += f"{i};{row['full_name']};{row['count']}\n"
+            csv_data += f"{i};{row.full_name};{row.count}\n"  
         return Response(
             csv_data,
             mimetype="text/csv",
