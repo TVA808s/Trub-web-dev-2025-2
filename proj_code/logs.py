@@ -22,7 +22,7 @@ def visit_log():
     else:
         logs, total = log_repository.get_user_logs(current_user.id, page, per_page)
     return render_template(
-        'visit_log.html',
+        'logs.visit_log.html',
         logs=logs,
         page=page,
         per_page=per_page,
