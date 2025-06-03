@@ -85,7 +85,4 @@ class LogRepository:
             """
             cursor.execute(query)
             user_stats = cursor.fetchall()
-            for row in user_stats:
-                if row['user_id'] is None:
-                    row['full_name'] = "Неаутентифицированный пользователь"
         return user_stats
