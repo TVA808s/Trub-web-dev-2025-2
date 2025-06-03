@@ -12,17 +12,21 @@ from proj_code.repositories.log_repository import LogRepository
 
 bp = Blueprint('logs', __name__, url_prefix='/logs')
 log_repository = LogRepository(db)
+user_repository = UserRepository(db)
+role_repository = RoleRepository(db)
 
 @bp.route('/visit_log')
 def visit_log():
     page = request.args.get('page', 1, type=int)
     per_page = 10
-    if current_user.id == 'Администратор':
+    user = user_repository.get_by_id(current_user.id)
+    role = role_repository.get_by_id(user.role_id)
+    if role.name == 'Администратор':
         logs, total = log_repository.get_all_logs(page, per_page)
     else:
         logs, total = log_repository.get_user_logs(current_user.id, page, per_page)
     return render_template(
-        'logs.visit_log.html',
+        'logs/visit_log.html',
         logs=logs,
         page=page,
         per_page=per_page,

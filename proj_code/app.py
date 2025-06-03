@@ -28,7 +28,6 @@ def create_app(test_config=None):
     app.add_url_rule('/', 'index', index)
     from proj_code.logs import bp as logs_bp, visit_log
     app.register_blueprint(logs_bp)
-    app.add_url_rule('/visit_log', 'visit_log', visit_log)
     @app.before_request
     def log_visit():
         if request.path.startswith('/static'):
