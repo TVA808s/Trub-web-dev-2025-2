@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Посещения страниц</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>№</th>
+            <th>Страница</th>
+            <th>Посещений</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- {% for log in logs %}
+        <tr>
+            <td> {{ log.id}} </td>
+            <td> {{ log.path }} </td>
+            <td> ф </td>
+        </tr> -->
+    </tbody>
+</table>
+<button>Экспорт в CVS</button>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Посещения пользователей</h2> 
+<table class="table">
+    <thead>
+        <tr>
+            <th>№</th>
+            <th>Пользователь</th>
+            <th>Посещений</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- {% for log in logs %}
+        <tr>
+            <td> {{ log.id}} </td>
+            {% if log.user_id %} <td> {{ log.user_id }} </td>{% else %} <td>Неаутентифицированный пользователь</td> {% endif %}
+            <td> ф </td> -->
+        <!-- </tr> -->
+    </tbody>
+</table>
+
+<button>Экспорт в CVS</button>
+{% endblock %}

@@ -8,7 +8,7 @@ from functools import wraps
 from proj_code.repositories.user_repository import UserRepository
 from proj_code.repositories.role_repository import RoleRepository
 from proj_code.db import db
-
+from proj_code.repositories.log_repository import LogRepository
 
 user_repository = UserRepository(db)
 role_repository = RoleRepository(db)
