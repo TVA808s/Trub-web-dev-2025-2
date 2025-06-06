@@ -10,6 +10,8 @@ from proj_code.app import create_app
 from proj_code.db import DBConnector
 from proj_code.repositories.role_repository import RoleRepository
 from proj_code.repositories.user_repository import UserRepository
+from proj_code.repositories.log_repository import LogRepository
+from datetime import timedelta, datetime 
 
 TEST_DB_CONFIG = {
     'MYSQL_USER': 'root',
@@ -76,111 +78,91 @@ def auto_cleanup(db_connector):
     with connection.cursor() as cursor:
         cursor.execute("DELETE FROM users;")
         cursor.execute("DELETE FROM roles;")
+        cursor.execute("DELETE FROM visit_logs;")
         connection.commit()
     yield
-
-@pytest.fixture
-def existing_role(db_connector):
-    data = (1, 'зз', 'ооо')
-    row_class = namedtuple('Row', ['id', 'name', 'description'])
-    role = row_class(*data)
-
-    connection = db_connector.connect()
-    
-    with connection.cursor() as cursor:
-        query = 'INSERT INTO roles(id, name, description) VALUES (%s, %s, %s);'
-        cursor.execute(query, data)
-        connection.commit()
-
-    yield role
-        
-    with connection.cursor() as cursor:
-        cursor.execute('DELETE FROM roles WHERE id = %s;', (role.id,))
-        connection.commit()
-
-@pytest.fixture
-def nonexisting_role_id():
-    return 999
-
-@pytest.fixture
-def example_roles(db_connector):
-    data = [(3, 'test1', 'te'), (4, 'test2', 'tee')]
-    row_class = namedtuple('Row', ['id', 'name', 'description'])
-    roles = [row_class(*row_data) for row_data in data]
-
-    connection = db_connector.connect()
-
-    with connection.cursor() as cursor:
-        cursor.execute("DELETE FROM roles;")
-        placeholders = ', '.join(['(%s, %s, %s)' for _ in range(len(data))])
-        query = f"INSERT INTO roles(id, name, description) VALUES {placeholders};"
-        cursor.execute(query, reduce(lambda seq, x: seq + list(x), data, []))
-        connection.commit()
-
-    yield roles
-
-    with connection.cursor() as cursor:
-        role_ids = ', '.join([str(role.id) for role in roles])
-        query = f"DELETE FROM roles WHERE id IN ({role_ids});"
-        cursor.execute(query)
-        connection.commit()
 
 
 @pytest.fixture
 def client(app):
     return app.test_client()
 
-
 @pytest.fixture
 def user_repository(db_connector):
     return UserRepository(db_connector)
 
-@pytest.fixture
-def existing_user(db_connector, existing_role):
-    data = (2, 'test_user', 'password', 'test', 'tes', 'te', 1)
-    row_class = namedtuple('Row', ['id', 'username', 'password', 'first_name', 'middle_name', 'last_name', 'role_id'])
-    user = row_class(*data)
 
+@pytest.fixture
+def log_repository(db_connector):
+    return LogRepository(db_connector)
+
+
+from werkzeug.security import generate_password_hash
+
+# Добавляем фикстуру для автоматической очистки
+@pytest.fixture(autouse=True)
+def auto_cleanup(db_connector):
     connection = db_connector.connect()
+    with connection.cursor() as cursor:
+        cursor.execute("DELETE FROM visit_logs;")
+        cursor.execute("DELETE FROM users;")
+        cursor.execute("DELETE FROM roles;")
+        connection.commit()
+    yield
+
+# Фикстура для тестовой роли
+@pytest.fixture
+def test_role(db_connector):
+    role_data = (3, 'Тестовая роль', 'Описание тестовой роли')
+    connection = db_connector.connect()
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "INSERT INTO roles (id, name, description) VALUES (%s, %s, %s)",
+            role_data
+        )
+        connection.commit()
     
-    with connection.cursor() as cursor:
-        query = 'INSERT INTO users(id, username, password, first_name, middle_name, last_name, role_id) VALUES (%s, %s, SHA2(%s, 256), %s, %s, %s, %s);'
-        cursor.execute(query, data)
-        connection.commit()
+    Role = namedtuple('Role', ['id', 'name', 'description'])
+    return Role(*role_data)
 
-    yield user
-
-    with connection.cursor() as cursor:
-        query = 'DELETE FROM users WHERE id=%s;'
-        cursor.execute(query, (user.id,))
-        connection.commit()
-
+# Фикстура для тестового пользователя
 @pytest.fixture
-def nonexisting_user_id():
-    return 999
-
-@pytest.fixture
-def example_users(db_connector, existing_role):
-    data = [
-        (1, 'user1', 'pass1', 'Alice', 'A', 'Anderson', existing_role.id),
-        (2, 'user2', 'pass2', 'Bob', 'B', 'Brown', existing_role.id),
-        (3, 'user3', 'pass3', 'Charlie', 'C', 'Clark', existing_role.id)
-    ]
-    row_class = namedtuple('Row', ['id', 'username', 'password', 'first_name', 'middle_name', 'last_name', 'role_id'])
-    users = [row_class(*row_data) for row_data in data]
-
+def test_user(db_connector, test_role):
+    user_data = (
+        100, 
+        'test_user', 
+        generate_password_hash('test_password'),
+        'Иван', 
+        'Иванович', 
+        'Иванов',
+        test_role.id
+    )
     connection = db_connector.connect()
-
     with connection.cursor() as cursor:
-        placeholders = ', '.join(['(%s, %s, SHA2(%s, 256), %s, %s, %s, %s)' for _ in range(len(data))])
-        query = f"INSERT INTO users(id, username, password, first_name, middle_name, last_name, role_id) VALUES {placeholders};"
-        cursor.execute(query, reduce(lambda seq, x: seq + list(x), data, []))
+        cursor.execute(
+            "INSERT INTO users (id, username, password, first_name, last_name, middle_name, role_id) "
+            "VALUES (%s, %s, %s, %s, %s, %s, %s)",
+            user_data
+        )
         connection.commit()
+    
+    User = namedtuple('User', ['id', 'username', 'password', 'first_name', 'last_name', 'middle_name', 'role_id'])
+    return User(*user_data)
 
-    yield users
-
+@pytest.fixture
+def test_logs(db_connector, test_user):
+    base_time = datetime.now()
+    logs_data = [
+        ('/route1', None, base_time - timedelta(minutes=10)),
+        ('/route2', None, base_time - timedelta(minutes=5)),
+        ('/route1', test_user.id, base_time - timedelta(minutes=3)),
+        ('/route2', test_user.id, base_time - timedelta(minutes=2)),
+        ('/route3', test_user.id, base_time - timedelta(minutes=1)),
+    ]
+    
+    connection = db_connector.connect()
     with connection.cursor() as cursor:
-        user_ids = ', '.join([str(user.id) for user in users])
-        query = f"DELETE FROM users WHERE id IN ({user_ids});"
-        cursor.execute(query)
+        query = "INSERT INTO visit_logs (path, user_id, created_at) VALUES (%s, %s, %s)"
+        cursor.executemany(query, logs_data)
         connection.commit()
+    return len(logs_data)

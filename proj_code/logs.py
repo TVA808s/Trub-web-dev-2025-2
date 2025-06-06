@@ -44,8 +44,8 @@ def pages_stat():
             csv_data += f"{i},{row.path},{row.count}\n"  
         return Response(
             csv_data,
-            mimetype="text/csv; charset=utf-8",
-            headers={"Content-disposition": "attachment; filename=pages_stat.csv"}
+            mimetype="text/csv",
+            headers={"Content-disposition": "attachment; filename=pages_stat.csv; charset=utf-8"}
         )
     return render_template('logs/pagesStat.html', logs=stats)
 

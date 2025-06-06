@@ -23,7 +23,7 @@ login_manager.login_message_category = 'warning'
 
 def check_rights(req_role):
     def decorator(func):
-        @wraps(func)
+        @wraps(func) # узнать что это и в чем нюанс, тесты
         def decorated_function(*args, **kwargs):
             if not current_user.is_authenticated:
                 flash('Войдите в аккаутн.', 'danger')
