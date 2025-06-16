@@ -13,7 +13,7 @@ class UserRepository:
                 LEFT JOIN users ON meetings.organizer = users.id
                 LEFT JOIN registration_table ON meetings.id = registration_table.meeting
                 WHERE meetings.date >= CURDATE()
-                GROUP BY meetings.id
+                ORDER BY meetings.date DESC
             """)
             meetings = cursor.fetchall()
         return meetings
