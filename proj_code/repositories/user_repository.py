@@ -77,7 +77,7 @@ class UserRepository:
     def delete(self, meeting_id):
         connection = self.db_connector.connect()
         with connection.cursor(named_tuple=True) as cursor:
-            cursor.execute("DELETE FROM meetings WHERE id = %s", (meeting_id))
+            cursor.execute("DELETE FROM meetings WHERE id = %s", (meeting_id,))
             connection.commit()
 
     def validate_password(self, user_id, password_to_validate):
