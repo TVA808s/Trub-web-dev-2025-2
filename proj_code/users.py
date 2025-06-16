@@ -116,18 +116,18 @@ def index():
         total_pages=total_pages
     )
 
-@bp.route('/<int:meeting_id>', methods=['GET'])
+@bp.route('/<int:meeting_id>')
 @login_required
 def getMeeting(meeting_id):
-    action = request.args.get('action')
-    registration_id = request.args.get('registration_id')
-    if action and registration_id:
-        if action == 'accept':
-            user_repository.set_status(registration_id, 'accepted')
-            flash('Заявка принята', 'success')
-        elif action == 'reject':
-            user_repository.set_status(registration_id, 'rejected')
-            flash('Заявка отклонена', 'warning')
+    # action = request.args.get('action')
+    # registration_id = request.args.get('registration_id')
+    # if action and registration_id:
+    #     if action == 'accept':
+    #         user_repository.set_status(registration_id, 'accepted')
+    #         flash('Заявка принята', 'success')
+    #     elif action == 'reject':
+    #         user_repository.set_status(registration_id, 'rejected')
+    #         flash('Заявка отклонена', 'warning')
 
     meeting = user_repository.get_meeting_by_id(meeting_id)
     if meeting is None:

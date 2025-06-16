@@ -48,6 +48,7 @@ class UserRepository:
                 LEFT JOIN registration_table ON meetings.id = registration_table.meeting
                 WHERE meetings.date >= CURDATE() AND meetings.id = %s
                 GROUP BY meetings.id
+                           
             """, (meeting_id,))
             meeting = cursor.fetchone()
         return meeting
