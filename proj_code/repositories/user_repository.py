@@ -24,9 +24,9 @@ class UserRepository:
             user = cursor.fetchone()
         return user
     
-    def get_by_username_and_password(self, username, password):
+    def get_by_login_and_password(self, login, password):
         with self.db_connector.connect().cursor(named_tuple=True) as cursor:
-            cursor.execute("SELECT * FROM users WHERE username = %s AND password = SHA2(%s, 256);", (username, password))
+            cursor.execute("SELECT * FROM users WHERE login = %s AND password = SHA2(%s, 256);", (login, password))
             user = cursor.fetchone()
         return user
     

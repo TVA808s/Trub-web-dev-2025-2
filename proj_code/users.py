@@ -61,15 +61,15 @@ def login():
         return redirect(url_for('users.index'))
     
     if request.method == 'POST':
-        username = request.form.get('login')
+        login = request.form.get('login')
         password = request.form.get('password')
         remember_me = request.form.get('remember_me') == 'on'
         
-        user = user_repository.get_by_username_and_password(username, password)
+        user = user_repository.get_by_login_and_password(login, password)
         
         if user is not None:
             flash('Авторизация прошла успешно', 'success')
-            login_user(User(user.id, user.login), remember=remember_me)
+            login_user(User(user.id, user.login, user.role), remember=remember_me)
             next_url = request.args.get('next', url_for('users.index'))
             return redirect(next_url)
         
