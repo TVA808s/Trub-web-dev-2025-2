@@ -31,7 +31,7 @@
                     {% endif %}
                 </td>
                 <td>
-                    <a class="btn btn-primary">Просмотр</a>
+                    <a class="btn btn-primary" href="{{url_for('users.getMeeting', meeting_id = meeting.id)}}">Просмотр</a>
                     {% if role and role != 'Пользователь' %}
                         <a class="btn btn-primary">Редактирование</a>
                     {% endif %}
