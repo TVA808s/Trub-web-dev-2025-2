@@ -32,6 +32,7 @@ class UserRepository:
             """, (meeting_id,))
             meeting = cursor.fetchone()
         return meeting
+    
     def get_accepted_volunteers(self, meeting_id):
         with self.db_connector.connect().cursor(named_tuple=True) as cursor:
             cursor.execute("""
@@ -41,10 +42,11 @@ class UserRepository:
                 FROM registration_table r
                 JOIN users u ON r.volunteer = u.id
                 WHERE r.meeting = %s
-                ORDER BY r.date DESC
-                WHERE registration_table.meeting = %s
                 AND r.status = 'подтверждено'
+                ORDER BY r.date DESC
             """, (meeting_id,))
+            av = cursor.fetchall()
+        return av
     
     def get_by_id(self, user_id):
         with self.db_connector.connect().cursor(named_tuple=True) as cursor:
