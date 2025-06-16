@@ -5,7 +5,6 @@ class UserRepository:
         
     def get_all_meetings(self):
         with self.db_connector.connect().cursor(named_tuple=True) as cursor:
-            # Используем CURDATE() для правильного сравнения дат в SQL
             cursor.execute("""
                 SELECT meetings.*, 
                        CONCAT(users.last_name, ' ', users.first_name) AS organizer_name,
