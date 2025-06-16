@@ -6,7 +6,7 @@ class UserRepository:
 
     def get_all_meetings(self):
         with self.db_connector.connect().cursor(named_tuple=True) as cursor:
-            cursor.execute("SELECT * FROM meetings WHERE date > %s", (datetime.date.today()))
+            cursor.execute("SELECT * FROM meetings WHERE date > %s;", (datetime.date.today()))
             meetings = cursor.fetchall()
         return meetings
 
