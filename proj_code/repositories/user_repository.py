@@ -19,7 +19,7 @@ class UserRepository:
                     CONCAT_WS(' ', u.last_name, u.first_name, u.middle_name) AS organizer_name,
                     (SELECT COUNT(*) 
                     FROM registration_table r 
-                    WHERE r.meeting = m.id) AS volunteers_count
+                    WHERE r.meeting = m.id AND r.status = 'accepted') AS volunteers_count
                 FROM meetings m
                 LEFT JOIN users u ON m.organizer = u.id
                 WHERE m.date >= CURDATE()
