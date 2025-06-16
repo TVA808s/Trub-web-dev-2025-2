@@ -1,9 +1,25 @@
-DROP TABLE IF EXISTS roles;
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS meetings;
 DROP TABLE IF EXISTS registration_table;
 DROP TABLE IF EXISTS visit_logs;
+DROP TABLE IF EXISTS meetings;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS roles;
 
+CREATE TABLE roles (
+    id INT PRIMARY KEY,
+    name VARCHAR(16) NOT NULL,
+    description TEXT
+) ENGINE INNODB;
+
+CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    login VARCHAR(32) UNIQUE NOT NULL,
+    password VARCHAR(256) NOT NULL,
+    last_name VARCHAR(16) NOT NULL,
+    first_name VARCHAR(16) NOT NULL,
+    middle_name VARCHAR(16) DEFAULT NULL,
+    role INT NOT NULL,
+    FOREIGN KEY (role) REFERENCES roles(id)
+) ENGINE INNODB;
 
 CREATE TABLE meetings (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -27,24 +43,6 @@ CREATE TABLE registration_table (
     date TIMESTAMP NOT NULL,
     status VARCHAR(16) NOT NULL
 );
-
-CREATE TABLE users (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    login VARCHAR(32) UNIQUE NOT NULL,
-    password VARCHAR(256) NOT NULL,
-    last_name VARCHAR(16) NOT NULL,
-    first_name VARCHAR(16) NOT NULL,
-    middle_name VARCHAR(16) DEFAULT NULL,
-    role INT NOT NULL,
-    FOREIGN KEY (role) REFERENCES roles(id)
-) ENGINE INNODB;
-
-CREATE TABLE roles (
-    id INT PRIMARY KEY,
-    name VARCHAR(16) NOT NULL,
-    description TEXT
-) ENGINE INNODB;
-
 
 
 insert into roles (id, name, description) values 
