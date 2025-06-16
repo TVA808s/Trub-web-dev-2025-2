@@ -51,7 +51,7 @@ class User(UserMixin):
 def load_user(user_id):
     user = user_repository.get_by_id(user_id)
     if user is not None:
-        return User(user.id, user.username, user.role)
+        return User(user.id, user.login, user.role)
     return None
 
 
@@ -61,7 +61,7 @@ def login():
         return redirect(url_for('users.index'))
     
     if request.method == 'POST':
-        username = request.form.get('username')
+        username = request.form.get('login')
         password = request.form.get('password')
         remember_me = request.form.get('remember_me') == 'on'
         
@@ -69,7 +69,7 @@ def login():
         
         if user is not None:
             flash('Авторизация прошла успешно', 'success')
-            login_user(User(user.id, user.username), remember=remember_me)
+            login_user(User(user.id, user.login), remember=remember_me)
             next_url = request.args.get('next', url_for('users.index'))
             return redirect(next_url)
         
