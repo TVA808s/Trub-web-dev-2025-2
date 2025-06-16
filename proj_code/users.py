@@ -32,7 +32,7 @@ def check_rights(req_role):
             user = user_repository.get_by_id(current_user.id)
             role = role_repository.get_by_id(user.role)
             
-            if (req_role == 'Администратор' and role.name != 'Администратор') or (req_role == 'Модератор' and (role.name == 'Модератор' or role.name == 'Администратор')):
+            if (req_role == 'Администратор' and role.name != 'Администратор') or (req_role == 'Модератор' and (role.name != 'Модератор' or role.name != 'Администратор')):
                 flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
                 return redirect(url_for('users.index'))
             
@@ -150,7 +150,7 @@ def delete(meeting_id):
         user_repository.delete(meeting_id)
         flash('Запись успешно удалена', 'success')
     except Exception as e:
-        flash('Ошибка при удалении: {e}', 'danger')
+        flash('Ошибка при удалении: ${e}', 'danger')
     return redirect(url_for('users.index'))
 
 @bp.route('/<int:user_id>/updateName', methods = ['POST', 'GET'])
