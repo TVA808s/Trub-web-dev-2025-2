@@ -116,7 +116,7 @@ def index():
         total_pages=total_pages
     )
 
-@bp.route('/<int:meeting_id>')
+@bp.route('/<int:meeting_id>', methods=['GET'])
 @login_required
 def getMeeting(meeting_id):
     action = request.args.get('action')

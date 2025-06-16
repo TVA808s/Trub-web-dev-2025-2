@@ -56,8 +56,8 @@ class UserRepository:
         with self.db_connector.connect().cursor(named_tuple=True) as cursor:
             cursor.execute("""
                 SELECT CONCAT_WS(' ', u.last_name, u.first_name, u.middle_name) as full_name,
-                r.contacts,
-                r.date        
+                    r.contacts,
+                    r.date        
                 FROM registration_table r
                 JOIN users u ON r.volunteer = u.id
                 WHERE r.meeting = %s
