@@ -79,7 +79,7 @@ class UserRepository:
                 FROM registration_table r
                 JOIN users u ON r.volunteer = u.id
                 WHERE r.meeting = %s
-                AND r.status = 'pending'  # Предполагаем, что статус ожидания - 'pending'
+                AND r.status = 'pending'  
                 ORDER BY r.date DESC
             """, (meeting_id,))
             pv = cursor.fetchall()
