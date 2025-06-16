@@ -133,9 +133,9 @@ def getMeeting(meeting_id):
     if meeting is None:
         flash('Мероприятие не найдено', 'danger')
         return redirect(url_for('users.index'))
-    if meeting.volunteers_amount >= meeting.volunteers_count:
+    if meeting.volunteers_amount <= meeting.volunteers_count:
         user_repository.reject_all_pending(meeting_id)
-        
+
     accepted_volunteers = user_repository.get_accepted_volunteers(meeting_id)
     pending_volunteers = user_repository.get_pending_volunteers(meeting_id)
 
