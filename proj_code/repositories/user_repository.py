@@ -43,7 +43,6 @@ class UserRepository:
                 SELECT meetings.*, 
                     CONCAT_WS(' ', users.last_name, users.first_name, users.middle_name) AS organizer_name,
                     COUNT(registration_table.id) AS volunteers_count IF registration_table.status = 'accepted'
-                    GROUP_CONCAT(registration_table.id) AS registration_list
                 FROM meetings
                 LEFT JOIN users ON meetings.organizer = users.id
                 LEFT JOIN registration_table ON meetings.id = registration_table.meeting
