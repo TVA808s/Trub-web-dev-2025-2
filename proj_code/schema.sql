@@ -89,3 +89,27 @@ VALUES
 ('Благотворительный забег', 'Ежегодный забег в поддержку детских домов', '2024-09-21', 'Городской стадион', 50, 'charity_run.jpg', 3),
 ('Обучение пожилых людей', 'Базовый курс компьютерной грамотности', '2024-07-30', 'Библиотека №5', 10, 'seniors_course.jpg', 3),
 ('Экологическая акция', 'Сбор пластика и макулатуры в микрорайоне', '2024-08-17', 'Сквер у фонтана', 30, 'eco_action.jpg', 3);
+
+
+INSERT INTO registration_table (meeting, volunteer, contacts, date, status)
+VALUES
+(1, 3, 'user@example.com', '2024-07-01 10:00:00', 'подтверждено'),
+(1, 2, 'moder@example.com', '2024-07-02 11:30:00', 'подтверждено');
+
+INSERT INTO registration_table (meeting, volunteer, contacts, date, status)
+VALUES
+(2, 1, 'user@example.com', '2024-07-10 09:45:00', 'подтверждено');
+
+INSERT INTO registration_table (meeting, volunteer, contacts, date, status)
+VALUES
+(3, 1, 'admin@example.com', '2024-08-01 12:30:00', 'подтверждено'),
+(3, 2, 'moder@example.com', '2024-08-02 13:45:00', 'подтверждено'),
+(3, 3, 'user@example.com', '2024-08-03 10:15:00', 'подтверждено');
+
+INSERT INTO registration_table (meeting, volunteer, contacts, date, status)
+VALUES
+(4, 2, 'user@example.com', '2024-07-15 14:00:00', 'подтверждено');
+
+INSERT INTO registration_table (meeting, volunteer, contacts, date, status)
+VALUES
+(5, 3, 'user@example.com', '2024-07-22 09:45:00', 'подтверждено');
