@@ -97,9 +97,7 @@ class UserRepository:
         connection = self.db_connector.connect()
         with connection.cursor() as cursor:
             cursor.execute(
-                "UPDATE registration_table SET status = 'rejected' "
-                "WHERE meeting = %s AND status = 'pending'",
-                (meeting_id,)
+                "UPDATE registration_table SET status = 'rejected' WHERE meeting = %s AND status = 'pending'",(meeting_id,)
             )
             connection.commit()
 
