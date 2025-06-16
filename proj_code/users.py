@@ -103,21 +103,15 @@ def index():
             role = sender_role.name
     return render_template('users/index.html', role = role, meetings = meetings)
 
-@bp.route('/<int:user_id>')
+@bp.route('/<int:meeting_id>')
 @login_required
-def getUser(user_id):
-    sender = user_repository.get_by_id(current_user.id)
-    sender_role = role_repository.get_by_id(sender.role_id)
-    if current_user.id != user_id and sender_role.name != 'Администратор':
-        flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
+def getMeeting(meeting_id):
+    meeting = user_repository.get_meeting_by_id(meeting_id)
+    if meeting is None:
+        flash('Мероприятия нет в базе данных!', 'danger')
         return redirect(url_for('users.index'))
-    
-    user = user_repository.get_by_id(user_id)
-    user_role = role_repository.get_by_id(user.role_id)
-    if user is None:
-        flash('Пользователя нет в базе данных!', 'danger')
-        return redirect(url_for('users.index'))
-    return render_template('users/getUser.html', password_error=None, login_error=None, user_data=user, user_role=getattr(user_role, 'name', ''))
+    accepted_volunteers = user_repository.get_accepted_volunteers(meeting_id)
+    return render_template('users/getMeeting.html', meeting = meeting, accepted_volunteers = accepted_volunteers)
 
 
 @bp.route('/createUser', methods = ['POST', 'GET'])

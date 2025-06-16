@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    
+    <div class="container">
+        <!-- Шапка мероприятия -->
+        <div class="meeting-header text-center rounded-3 mb-4">
+            <h1 class="display-4 fw-bold">{{ meeting.title }}</h1>
+            <div class="d-flex justify-content-center gap-4 mt-4">
+                <span class="d-flex align-items-center gap-1">
+                    <i class="bi bi-calendar-event"></i>
+                    {{ meeting.date }}
+                </span>
+                <span class="d-flex align-items-center gap-1">
+                    <i class="bi bi-geo-alt"></i>
+                    {{ meeting.place }}
+                </span>
+                <span class="d-flex align-items-center gap-1">
+                    <i class="bi bi-person"></i>
+                    {{ meeting.organizer_name }}
+                </span>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Основное содержимое -->
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="h4 mb-0">Описание мероприятия</h2>
+                    </div>
+                    <div class="card-body markdown-content">
+                        {{ meeting.description|markdown }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Боковая панель с деталями -->
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h2 class="h4 mb-0">Детали мероприятия</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="fw-bold">Требуется волонтеров:</span>
+                            <span>{{ meeting.volunteers_amount }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="fw-bold">Зарегистрировано:</span>
+                            <span>{{ meeting.volunteers_count }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="fw-bold">Статус:</span>
+                            <span>
+                                {% if meeting.volunteers_count >= meeting.volunteers_amount %}
+                                    <span class="badge bg-danger">Регистрация закрыта</span>
+                                {% else %}
+                                    <span class="badge bg-success">Идёт набор</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="d-grid gap-2 mt-4">
+                            {% if meeting.volunteers_count < meeting.volunteers_amount %}
+                                <button class="btn btn-primary btn-lg">
+                                    <i class="bi bi-person-plus"></i> Зарегистрироваться
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ФИО</th>
+                <th>Контакты</th>
+                <th>Дата регистрации</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for av in accepted_volunteers %}
+            <tr>
+                <td>{{ av.full_name}}</td>
+                <td>{{ av.contacts }}</td>
+                <td>{{ av.date }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+{% endblock %}

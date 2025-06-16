@@ -18,6 +18,34 @@ class UserRepository:
             meetings = cursor.fetchall()
         return meetings
 
+    def get_meeting_by_id(self, meeting_id):
+        with self.db_connector.connect().cursor(named_tuple=True) as cursor:
+            cursor.execute("""
+                SELECT meetings.*, 
+                       CONCAT_WS(' ', users.last_name, users.first_name, users.middle_name) AS organizer_name,
+                       COUNT(registration_table.id) AS volunteers_count
+                FROM meetings
+                LEFT JOIN users ON meetings.organizer = users.id
+                LEFT JOIN registration_table ON meetings.id = registration_table.meeting
+                WHERE meetings.date >= CURDATE() AND meetings.id = %s
+                GROUP BY meetings.id
+            """, (meeting_id,))
+            meeting = cursor.fetchone()
+        return meeting
+    def get_accepted_volunteers(self, meeting_id):
+        with self.db_connector.connect().cursor(named_tuple=True) as cursor:
+            cursor.execute("""
+                SELECT CONCAT_WS(' ', u.last_name, u.first_name, u.middle_name) as full_name,
+                r.contacts,
+                r.date        
+                FROM registration_table r
+                JOIN users u ON r.volunteer = u.id
+                WHERE r.meeting = %s
+                ORDER BY r.date DESC
+                WHERE registration_table.meeting = %s
+                AND r.status = 'подтверждено'
+            """, (meeting_id,))
+    
     def get_by_id(self, user_id):
         with self.db_connector.connect().cursor(named_tuple=True) as cursor:
             cursor.execute("SELECT * FROM users WHERE id = %s;", (user_id,))
