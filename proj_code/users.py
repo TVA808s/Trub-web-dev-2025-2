@@ -95,7 +95,7 @@ def handler():
 @bp.route('/')
 def index():
     page = request.args.get('page', 1, type=int)
-    per_page = 10
+    per_page = 2
     meetings, total = user_repository.get_all_meetings(page, per_page)
     total_pages = ceil(total / per_page) if total > 0 else 1
     if page < 1 or (total_pages > 0 and page > total_pages):
