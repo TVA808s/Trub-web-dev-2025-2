@@ -7,7 +7,7 @@ class UserRepository:
         with self.db_connector.connect().cursor(named_tuple=True) as cursor:
             cursor.execute("""
                 SELECT meetings.*, 
-                       CONCAT(users.last_name, ' ', users.first_name) AS organizer_name,
+                       CONCAT_WS(' ', users.last_name, users.first_name, users.middle_name) AS organizer_name,
                        COUNT(registration_table.id) AS volunteers_count
                 FROM meetings
                 LEFT JOIN users ON meetings.organizer = users.id
