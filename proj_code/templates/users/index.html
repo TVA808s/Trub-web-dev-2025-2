@@ -1,49 +1,53 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
     <table class="table">
         <thead>
             <tr>
-                <th>Title</th>
-                <th>Date</th>
-                <th>Place</th>
-                <th>Organizer</th>
-                <th>Volunteers amount</th>
-                <th>Needed amount</th>
-                <th>Tag</th>
+                <th>Название</th>
+                <th>Дата</th>
+                <th>Место</th>
+                <th>Организатор</th>
+                <th>Зарегистрировано</th>
+                <th>Требуется</th>
+                <th>Статус</th>
+                <th>Действия</th>
             </tr>
         </thead>
         <tbody>
             {% for meeting in meetings %}
-            {% if meeting.date > current_time %}
             <tr>
-                <td> {{ meeting.title }} </td>
-                <td> {{ meeting.date }} </td>
-                <td> {{ meeting.place }} </td>
-                <td> {{ meeting.organizer }} </td>
-                <td> {{ meeting.count }} </td>
-                <td> {{ meeting.volunteers_amount }} </td>
-                <td> {% if meeting.count >= meeting.volunteers_amount %} Регистрация закрыта {% else %} Идёт набор волонтёров {% endif %}</td>
+                <td>{{ meeting.title }}</td>
+                <td>{{ meeting.date }}</td>
+                <td>{{ meeting.place }}</td>
+                <td>{{ meeting.organizer_name }}</td>  
+                <td>{{ meeting.volunteers_count }}</td>  
+                <td>{{ meeting.volunteers_amount }}</td>
                 <td>
-                    <a class="btn btn-primary" > Просмотр </a>
-                {% if role != 'Пользователь' %}
-                    <a class="btn btn-primary" > Редактирование </a>
-                {% endif %}
-
-                {% if role == 'Администратор' %}
-                    <button type="button" 
-                            class="btn btn-danger" 
-                            data-bs-toggle="modal" 
-                            data-bs-target="#deleteModal"
-                            data-meeting-title="{{ meeting.title }}"
-                            data-meeting-id="{{ meeting.id }}">
-                        Удалить
-                    </button>
+                    {% if meeting.volunteers_count >= meeting.volunteers_amount %}
+                        Регистрация закрыта
+                    {% else %}
+                        Идёт набор волонтёров
+                    {% endif %}
                 </td>
-                {% endif %}
+                <td>
+                    <a class="btn btn-primary">Просмотр</a>
+                    {% if role != 'Пользователь' %}
+                        <a class="btn btn-primary">Редактирование</a>
+                    {% endif %}
+                    
+                    {% if role == 'Администратор' %}
+                        <button type="button" 
+                                class="btn btn-danger" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#deleteModal"
+                                data-meeting-title="{{ meeting.title }}"
+                                data-meeting-id="{{ meeting.id }}">
+                            Удалить
+                        </button>
+                    {% endif %}
+                </td>
             </tr>
-            {% endif %}
             {% endfor %}
         </tbody>
     </table>

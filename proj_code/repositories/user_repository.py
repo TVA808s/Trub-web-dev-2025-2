@@ -3,10 +3,19 @@ class UserRepository:
     def __init__(self, db_connector):
         self.db_connector = db_connector
         
-
     def get_all_meetings(self):
         with self.db_connector.connect().cursor(named_tuple=True) as cursor:
-            cursor.execute("SELECT * FROM meetings WHERE date > %s;", (datetime.date.today()))
+            # Используем CURDATE() для правильного сравнения дат в SQL
+            cursor.execute("""
+                SELECT meetings.*, 
+                       CONCAT(users.last_name, ' ', users.first_name) AS organizer_name,
+                       COUNT(registration_table.id) AS volunteers_count
+                FROM meetings
+                LEFT JOIN users ON meetings.organizer = users.id
+                LEFT JOIN registration_table ON meetings.id = registration_table.meeting
+                WHERE meetings.date >= CURDATE()
+                GROUP BY meetings.id
+            """)
             meetings = cursor.fetchall()
         return meetings
 
