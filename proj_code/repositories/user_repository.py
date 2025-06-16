@@ -41,14 +41,14 @@ class UserRepository:
         with self.db_connector.connect().cursor(named_tuple=True) as cursor:
             cursor.execute("""
                 SELECT meetings.*, 
-                       CONCAT_WS(' ', users.last_name, users.first_name, users.middle_name) AS organizer_name,
-                       COUNT(registration_table.id) AS volunteers_count
+                    CONCAT_WS(' ', users.last_name, users.first_name, users.middle_name) AS organizer_name,
+                    COUNT(registration_table.id) AS volunteers_count IF registration_table.status = 'accepted'
+                    GROUP_CONCAT(registration_table.id) AS registration_list
                 FROM meetings
                 LEFT JOIN users ON meetings.organizer = users.id
                 LEFT JOIN registration_table ON meetings.id = registration_table.meeting
                 WHERE meetings.date >= CURDATE() AND meetings.id = %s
-                GROUP BY meetings.id
-                           
+                GROUP BY meetings.id          
             """, (meeting_id,))
             meeting = cursor.fetchone()
         return meeting
@@ -91,6 +91,16 @@ class UserRepository:
             cursor.execute(
                 "UPDATE registration_table SET status = %s WHERE id = %s", 
                 (status, registration_id)
+            )
+            connection.commit()
+
+    def reject_all_pending(self, meeting_id):
+        connection = self.db_connector.connect()
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "UPDATE registration_table SET status = 'rejected' "
+                "WHERE meeting = %s AND status = 'pending'",
+                (meeting_id,)
             )
             connection.commit()
 
