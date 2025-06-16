@@ -13,7 +13,7 @@
         {% if title %}
           {{ title }}
         {% else %}
-          Лабораторная работа №5
+          Экзаменационное задание
         {% endif %}
     </title>
   </head>
@@ -21,28 +21,25 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
-              <a class="navbar-brand" href="{{ url_for('users.index') }}">Лабораторная работа № 4</a>
-              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <a class="navbar-brand" href="{{ url_for('') }}">Главная страница</a>
+              <!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
-              </button>
+              </button> -->
               <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                  <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="{{ url_for('users.index') }}">Пользователи</a>
-                  </li>
-                  <li class="nav-item">
-                      <a class="nav-link" href="{{ url_for('logs.visit_log') }}">Журнал посещений</a>
-                  </li>
                   {% if current_user.is_authenticated %}
                     <li class="nav-item">
-                      <a class="nav-link" aria-current="page" href="{{ url_for('users.updatePassword', user_id=current_user.id) }}">Сменить пароль</a>
+                      <a class="nav-link" aria-current="page" href="{{ url_for('') }}">Редактирование</a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" aria-current="page" href="{{ url_for('users.logout') }}">Выйти</a>
+                      <a class="nav-link" aria-current="page" href="{{ url_for('') }}">Добавление</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" aria-current="page" href="{{ url_for('') }}">Просмотр</a>
                     </li>
                   {% else %}
                     <li class="nav-item">
-                      <a class="nav-link" aria-current="page" href="{{ url_for('users.login') }}">Войти</a>
+                      <a class="nav-link" aria-current="page" href="{{ url_for('') }}">Войти</a>
                     </li>
                   {% endif %}
                 </ul>

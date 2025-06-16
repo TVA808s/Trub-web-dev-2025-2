@@ -8,7 +8,7 @@ from functools import wraps
 from proj_code.repositories.user_repository import UserRepository
 from proj_code.repositories.role_repository import RoleRepository
 from proj_code.db import db
-from proj_code.repositories.log_repository import LogRepository
+
 
 user_repository = UserRepository(db)
 role_repository = RoleRepository(db)
@@ -23,19 +23,16 @@ login_manager.login_message_category = 'warning'
 
 def check_rights(req_role):
     def decorator(func):
-        @wraps(func) # узнать что это и в чем нюанс, тесты
+        @wraps(func) 
         def decorated_function(*args, **kwargs):
             if not current_user.is_authenticated:
                 flash('Войдите в аккаутн.', 'danger')
                 return redirect(url_for('users.login'))
             
             user = user_repository.get_by_id(current_user.id)
-            role = role_repository.get_by_id(user.role_id)
-            if not role:
-                flash('Доступ невозможен. Уточните у администратора.', 'danger')
-                return redirect(url_for('users.login'))
+            role = role_repository.get_by_id(user.role)
             
-            if req_role == 'Администратор' and role.name != 'Администратор':
+            if (req_role == 'Администратор' and role.name != 'Администратор') or (req_role == 'Модератор' and (role.name == 'Модератор' or role.name == 'Администратор')):
                 flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
                 return redirect(url_for('users.index'))
             
@@ -45,15 +42,16 @@ def check_rights(req_role):
 
 
 class User(UserMixin):
-    def __init__(self, user_id, login):
+    def __init__(self, user_id, login, role):
         self.id = user_id
         self.login = login
+        self.role = role
 
 @login_manager.user_loader
 def load_user(user_id):
     user = user_repository.get_by_id(user_id)
     if user is not None:
-        return User(user.id, user.username)
+        return User(user.id, user.username, user.role)
     return None
 
 
@@ -92,14 +90,13 @@ def handler():
 
 @bp.route('/')
 def index():
-    admin = False
+    role = ''
     if current_user.is_authenticated:
         sender = user_repository.get_by_id(current_user.id)
         if sender:
-            sender_role = role_repository.get_by_id(sender.role_id)
-            if sender_role and sender_role.name == 'Администратор':
-                admin = True
-    return render_template('users/index.html', admin=admin, users=user_repository.all())
+            sender_role = role_repository.get_by_id(sender.role)
+            role = sender_role.name
+    return render_template('users/index.html', role = role)
 
 @bp.route('/<int:user_id>')
 @login_required

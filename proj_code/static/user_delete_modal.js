@@ -2,17 +2,16 @@
 
 function modalShown(event) {
     const button = event.relatedTarget;
-    const userId = button.getAttribute('data-user-id');
-    const newUrl = `/users/${userId}/delete`;
+    const meetingId = button.getAttribute('data-meeting-id');
+    const newUrl = `/users/${meetingId}/delete`;
     const form = document.getElementById('deleteModalForm');
     
     // данные пользователя из data-атрибутов
-    const lastName = button.getAttribute('data-last-name');
-    const firstName = button.getAttribute('data-first-name');
-    const middleName = button.getAttribute('data-middle-name');
+    const meetingTitle = button.getAttribute('data-meeting-title');
+
     
-    const modalUserName = document.getElementById('modalUserName');
-    modalUserName.textContent = `${lastName} ${firstName} ${middleName}`;
+    const modalUserName = document.getElementById('modalMeetingName');
+    modalUserName.textContent = `${meetingTitle}`;
     form.action = newUrl;
 }
 

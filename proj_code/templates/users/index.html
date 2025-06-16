@@ -5,60 +5,66 @@
     <table class="table">
         <thead>
             <tr>
-                <th>№</th>
-                <th>Fullname</th>
-                <th>role</th>
-                <th>Actions</th>
+                <th>Title</th>
+                <th>Date</th>
+                <th>Place</th>
+                <th>Organizer</th>
+                <th>Volunteers amount</th>
+                <th>Needed amount</th>
+                <th>Tag</th>
             </tr>
         </thead>
         <tbody>
-            {% for user in users %}
+            {% for meeting in meetings %}
+            {% if meeting.date > current_time %}
             <tr>
-                <td> {{ loop.index }} </td>
-                <td> {{ user.last_name }} {{ user.first_name }} {% if user.middle_name %} {{ user.middle_name }} {% endif %} </td>
-                <td> {{ user.role }} </td>
+                <td> {{ meeting.title }} </td>
+                <td> {{ meeting.date }} </td>
+                <td> {{ meeting.place }} </td>
+                <td> {{ meeting.organizer }} </td>
+                <td> {{ meeting.count }} </td>
+                <td> {{ meeting.volunteers_amount }} </td>
+                <td> {% if meeting.count >= meeting.volunteers_amount %} Регистрация закрыта {% else %} Идёт набор волонтёров {% endif %}</td>
                 <td>
-                {% if not admin and current_user.id == user.id %}
-                <a class="btn btn-primary" href="{{ url_for('users.getUser', user_id=user.id) }}"> Просмотр </a>
-                <a class="btn btn-primary" href="{{ url_for('users.updateName', user_id=user.id) }}"> Редактирование </a>
+                    <a class="btn btn-primary" href="{{ url_for('') }}"> Просмотр </a>
+                {% if role != 'Пользователь' %}
+                    <a class="btn btn-primary" href="{{ url_for('') }}"> Редактирование </a>
                 {% endif %}
 
-                {% if admin %}
-                    <a class="btn btn-primary" href="{{ url_for('users.getUser', user_id=user.id) }}"> Просмотр </a>
-                    <a class="btn btn-primary" href="{{ url_for('users.updateName', user_id=user.id) }}"> Редактирование </a>
+                {% if role == 'Администратор' %}
                     <button type="button" 
                             class="btn btn-danger" 
                             data-bs-toggle="modal" 
                             data-bs-target="#deleteModal"
-                            data-user-id="{{ user.id }}"
-                            data-last-name="{{ user.last_name }}"
-                            data-first-name="{{ user.first_name }}"
-                            data-middle-name="{{ user.middle_name }}">
+                            data-meeting-title="{{ meeting.title }}"
+                            data-meeting-id="{{ meeting.id }}">
                         Удалить
                     </button>
                 </td>
                 {% endif %}
             </tr>
+            {% endif %}
             {% endfor %}
         </tbody>
     </table>
-    {% if admin %}
-    <a href="{{ url_for('users.createUser') }}" class="btn btn-primary">Добавить пользователя</a>
+    {% if role == 'Администратор' %}
+    <a href="{{ url_for('') }}" class="btn btn-primary">Добавить мероприятие</a>
     {% endif %}
+
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="deleteModalLabel">Удаление учетной записи</h1>
+                    <h1 class="modal-title fs-5" id="deleteModalLabel">Удаление мероприятия</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Вы уверены, что хотите удалить пользователя <span id="modalUserName"></span>?
+                    Вы уверены, что хотите удалить мероприятие <span id="modalMeetingName"></span>?
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отменить</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Нет</button>
                     <form method="post" id="deleteModalForm">
-                        <button type="submit" class="btn btn-primary">Удалить</button>
+                        <button type="submit" class="btn btn-primary">Да</button>
                     </form>
                 </div>
             </div>
