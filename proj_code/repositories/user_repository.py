@@ -40,14 +40,17 @@ class UserRepository:
     def get_meeting_by_id(self, meeting_id):
         with self.db_connector.connect().cursor(named_tuple=True) as cursor:
             cursor.execute("""
-                SELECT meetings.*, 
+                SELECT 
+                    meetings.*,
                     CONCAT_WS(' ', users.last_name, users.first_name, users.middle_name) AS organizer_name,
-                    COUNT(CASE WHEN registration_table.status = 'accepted' THEN 1 END) AS volunteers_count
+                    (SELECT COUNT(*) 
+                    FROM registration_table 
+                    WHERE meeting = meetings.id 
+                    AND status = 'accepted'
+                    ) AS volunteers_count
                 FROM meetings
                 LEFT JOIN users ON meetings.organizer = users.id
-                LEFT JOIN registration_table ON meetings.id = registration_table.meeting
-                WHERE meetings.date >= CURDATE() AND meetings.id = %s
-                GROUP BY meetings.id          
+                WHERE meetings.id = %s          
             """, (meeting_id,))
             meeting = cursor.fetchone()
         return meeting
