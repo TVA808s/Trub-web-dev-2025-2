@@ -36,9 +36,9 @@ CREATE TABLE meetings (
 CREATE TABLE registration_table (
     id INT PRIMARY KEY AUTO_INCREMENT,
     meeting INT NOT NULL,
-    FOREIGN KEY (meeting) REFERENCES meetings(id),
+    FOREIGN KEY (meeting) REFERENCES meetings(id) ON DELETE CASCADE,
     volunteer INT NOT NULL,
-    FOREIGN KEY (volunteer) REFERENCES users(id),
+    FOREIGN KEY (volunteer) REFERENCES users(id) ON DELETE CASCADE,
     contacts VARCHAR(64) NOT NULL,
     date TIMESTAMP NOT NULL,
     status VARCHAR(16) NOT NULL
