@@ -94,5 +94,33 @@
             {% endfor %}
         </tbody>
     </table>
+    
+    <h2>Ожидающие волонтёры</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ФИО</th>
+                <th>Контакты</th>
+                <th>Дата регистрации</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pv in pending_volunteers %}
+            <tr>
+                <td>{{ pv.full_name }}</td>
+                <td>{{ pv.contacts }}</td>
+                <td>{{ pv.date }}</td>
+                <td>
+                    <a href="{{ url_for('users.getMeeting', meeting_id=meeting.id, action='accept', registration_id=pv.registration_id) }}" 
+                    class="btn btn-success btn-sm">Принять</a>
+                    
+                    <a href="{{ url_for('users.getMeeting', meeting_id=meeting.id, action='reject', registration_id=pv.registration_id) }}" 
+                    class="btn btn-danger btn-sm">Отклонить</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
 {% endblock %}

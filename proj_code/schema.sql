@@ -93,23 +93,23 @@ VALUES
 
 INSERT INTO registration_table (meeting, volunteer, contacts, date, status)
 VALUES
-(1, 3, 'user@example.com', '2024-07-01 10:00:00', 'подтверждено'),
-(1, 2, 'moder@example.com', '2024-07-02 11:30:00', 'подтверждено');
+(1, 3, 'user@example.com', '2024-07-01 10:00:00', 'accepted'),
+(1, 2, 'moder@example.com', '2024-07-02 11:30:00', 'accepted');
 
 INSERT INTO registration_table (meeting, volunteer, contacts, date, status)
 VALUES
-(2, 1, 'user@example.com', '2024-07-10 09:45:00', 'подтверждено');
+(2, 1, 'user@example.com', '2024-07-10 09:45:00', 'accepted');
 
 INSERT INTO registration_table (meeting, volunteer, contacts, date, status)
 VALUES
-(3, 1, 'admin@example.com', '2024-08-01 12:30:00', 'подтверждено'),
-(3, 2, 'moder@example.com', '2024-08-02 13:45:00', 'подтверждено'),
-(3, 3, 'user@example.com', '2024-08-03 10:15:00', 'подтверждено');
+(3, 1, 'admin@example.com', '2024-08-01 12:30:00', 'accepted'),
+(3, 2, 'moder@example.com', '2024-08-02 13:45:00', 'accepted'),
+(3, 3, 'user@example.com', '2024-08-03 10:15:00', 'accepted');
 
 INSERT INTO registration_table (meeting, volunteer, contacts, date, status)
 VALUES
-(4, 2, 'user@example.com', '2024-07-15 14:00:00', 'подтверждено');
+(4, 2, 'user@example.com', '2024-07-15 14:00:00', 'accepted');
 
 INSERT INTO registration_table (meeting, volunteer, contacts, date, status)
 VALUES
-(5, 3, 'user@example.com', '2024-07-22 09:45:00', 'подтверждено');
+(5, 3, 'user@example.com', '2024-07-22 09:45:00', 'accepted');

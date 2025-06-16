@@ -61,12 +61,38 @@ class UserRepository:
                 FROM registration_table r
                 JOIN users u ON r.volunteer = u.id
                 WHERE r.meeting = %s
-                AND r.status = 'подтверждено'
+                AND r.status = 'accepted'
                 ORDER BY r.date DESC
             """, (meeting_id,))
             av = cursor.fetchall()
         return av
     
+    def get_pending_volunteers(self, meeting_id):
+        with self.db_connector.connect().cursor(named_tuple=True) as cursor:
+            cursor.execute("""
+                SELECT 
+                    CONCAT_WS(' ', u.last_name, u.first_name, u.middle_name) as full_name,
+                    r.contacts,
+                    r.date,
+                    r.id AS registration_id  # Важно: используем id регистрации
+                FROM registration_table r
+                JOIN users u ON r.volunteer = u.id
+                WHERE r.meeting = %s
+                AND r.status = 'pending'  # Предполагаем, что статус ожидания - 'pending'
+                ORDER BY r.date DESC
+            """, (meeting_id,))
+            pv = cursor.fetchall()
+        return pv
+    
+    def set_status(self, registration_id, status):
+        connection = self.db_connector.connect()
+        with connection.cursor(named_tuple=True) as cursor:
+            cursor.execute(
+                "UPDATE registration_table SET status = %s WHERE id = %s", 
+                (status, registration_id)
+            )
+            connection.commit()
+
     def get_by_id(self, user_id):
         with self.db_connector.connect().cursor(named_tuple=True) as cursor:
             cursor.execute("SELECT * FROM users WHERE id = %s;", (user_id,))

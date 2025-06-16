@@ -119,12 +119,30 @@ def index():
 @bp.route('/<int:meeting_id>')
 @login_required
 def getMeeting(meeting_id):
+    action = request.args.get('action')
+    registration_id = request.args.get('registration_id')
+    if action and registration_id:
+        if action == 'accept':
+            user_repository.set_status(registration_id, 'accepted')
+            flash('Заявка принята', 'success')
+        elif action == 'reject':
+            user_repository.set_status(registration_id, 'rejected')
+            flash('Заявка отклонена', 'warning')
+
     meeting = user_repository.get_meeting_by_id(meeting_id)
     if meeting is None:
-        flash('Мероприятия нет в базе данных!', 'danger')
+        flash('Мероприятие не найдено', 'danger')
         return redirect(url_for('users.index'))
+    
     accepted_volunteers = user_repository.get_accepted_volunteers(meeting_id)
-    return render_template('users/getMeeting.html', meeting = meeting, accepted_volunteers = accepted_volunteers)
+    pending_volunteers = user_repository.get_pending_volunteers(meeting_id)
+
+    return render_template(
+        'users/getMeeting.html',
+        meeting=meeting,
+        accepted_volunteers=accepted_volunteers,
+        pending_volunteers=pending_volunteers
+    )
 
 
 @bp.route('/createUser', methods = ['POST', 'GET'])
