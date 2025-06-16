@@ -42,7 +42,7 @@ class UserRepository:
             cursor.execute("""
                 SELECT meetings.*, 
                     CONCAT_WS(' ', users.last_name, users.first_name, users.middle_name) AS organizer_name,
-                    COUNT(registration_table.id) AS volunteers_count IF registration_table.status = 'accepted'
+                    COUNT(CASE WHEN registration_table.status = 'accepted' THEN 1 END) AS volunteers_count
                 FROM meetings
                 LEFT JOIN users ON meetings.organizer = users.id
                 LEFT JOIN registration_table ON meetings.id = registration_table.meeting
