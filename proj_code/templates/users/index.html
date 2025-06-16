@@ -32,7 +32,7 @@
                 </td>
                 <td>
                     <a class="btn btn-primary">Просмотр</a>
-                    {% if role != 'Пользователь' %}
+                    {% if role and role != 'Пользователь' %}
                         <a class="btn btn-primary">Редактирование</a>
                     {% endif %}
                     
