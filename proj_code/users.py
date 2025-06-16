@@ -142,13 +142,13 @@ def createUser():
             db.connect().rollback()
     return render_template('users/createUser.html', password_error=None, login_error=None, user_data=user_data, roles=role_repository.all())
 
-@bp.route('/<int:user_id>/delete', methods = ['POST'])
+@bp.route('/<int:meeting_id>/delete', methods = ['POST'])
 @login_required
 @check_rights('Администратор')
-def delete(user_id):
+def delete(meeting_id):
     try:
-        user_repository.delete(user_id)
-        flash('Учетная запись успешно удалена', 'success')
+        user_repository.delete(meeting_id)
+        flash('Запись успешно удалена', 'success')
     except Exception as e:
         flash('Ошибка при удалении: {e}', 'danger')
     return redirect(url_for('users.index'))
