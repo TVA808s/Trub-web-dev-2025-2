@@ -95,17 +95,26 @@ def handler():
 @bp.route('/')
 def index():
     page = request.args.get('page', 1, type=int)
-    per_page = request.args.get('per_page', 10, type=int)
+    per_page = 10
     meetings, total = user_repository.get_all_meetings(page, per_page)
-    total_pages = ceil(total / per_page)
-
+    total_pages = ceil(total / per_page) if total > 0 else 1
+    if page < 1 or (total_pages > 0 and page > total_pages):
+        flash('Запрошенная страница не существует', 'warning')
+        return redirect(url_for('users.index'))
+    
     role = ''
     if current_user.is_authenticated:
         sender = user_repository.get_by_id(current_user.id)
         if sender:
             sender_role = role_repository.get_by_id(sender.role)
-            role = sender_role.name
-    return render_template('users/index.html', role = role, meetings = meetings, current_page = page, total_pages = total_pages)
+            role = sender_role.name  
+    return render_template(
+        'users/index.html', 
+        role=role, 
+        meetings=meetings, 
+        current_page=page, 
+        total_pages=total_pages
+    )
 
 @bp.route('/<int:meeting_id>')
 @login_required

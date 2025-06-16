@@ -7,15 +7,23 @@ class UserRepository:
         offset = (page - 1) * per_page
         with self.db_connector.connect().cursor(named_tuple=True) as cursor:
             cursor.execute("""
-                SELECT meetings.*, 
-                   CONCAT_WS(' ', users.last_name, users.first_name, users.middle_name) AS organizer_name,
-                   COUNT(registration_table.id) AS volunteers_count
-                FROM meetings
-                LEFT JOIN users ON meetings.organizer = users.id
-                LEFT JOIN registration_table ON meetings.id = registration_table.meeting
-                WHERE meetings.date >= CURDATE()
-                GROUP BY meetings.id
-                ORDER BY meetings.date DESC
+                SELECT 
+                    m.id,
+                    m.title,
+                    m.description,
+                    m.date,
+                    m.place,
+                    m.volunteers_amount,
+                    m.image,
+                    m.organizer,
+                    CONCAT_WS(' ', u.last_name, u.first_name, u.middle_name) AS organizer_name,
+                    (SELECT COUNT(*) 
+                    FROM registration_table r 
+                    WHERE r.meeting = m.id) AS volunteers_count
+                FROM meetings m
+                LEFT JOIN users u ON m.organizer = u.id
+                WHERE m.date >= CURDATE()
+                ORDER BY m.date DESC
                 LIMIT %s OFFSET %s
             """, (per_page, offset))
             meetings = cursor.fetchall()
@@ -23,7 +31,7 @@ class UserRepository:
             cursor.execute("""
                 SELECT COUNT(*) AS total
                 FROM meetings
-                WHERE meetings.date >= CURDATE()
+                WHERE date >= CURDATE()
             """)
             total = cursor.fetchone().total
         
