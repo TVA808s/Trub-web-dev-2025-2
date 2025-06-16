@@ -3,20 +3,31 @@ class UserRepository:
     def __init__(self, db_connector):
         self.db_connector = db_connector
         
-    def get_all_meetings(self):
+    def get_all_meetings(self, page=1, per_page=10):
+        offset = (page - 1) * per_page
         with self.db_connector.connect().cursor(named_tuple=True) as cursor:
             cursor.execute("""
                 SELECT meetings.*, 
-                       CONCAT_WS(' ', users.last_name, users.first_name, users.middle_name) AS organizer_name,
-                       COUNT(registration_table.id) AS volunteers_count
+                   CONCAT_WS(' ', users.last_name, users.first_name, users.middle_name) AS organizer_name,
+                   COUNT(registration_table.id) AS volunteers_count
                 FROM meetings
                 LEFT JOIN users ON meetings.organizer = users.id
                 LEFT JOIN registration_table ON meetings.id = registration_table.meeting
                 WHERE meetings.date >= CURDATE()
+                GROUP BY meetings.id
                 ORDER BY meetings.date DESC
-            """)
+                LIMIT %s OFFSET %s
+            """, (per_page, offset))
             meetings = cursor.fetchall()
-        return meetings
+
+            cursor.execute("""
+                SELECT COUNT(*) AS total
+                FROM meetings
+                WHERE meetings.date >= CURDATE()
+            """)
+            total = cursor.fetchone().total
+        
+        return meetings, total
 
     def get_meeting_by_id(self, meeting_id):
         with self.db_connector.connect().cursor(named_tuple=True) as cursor:

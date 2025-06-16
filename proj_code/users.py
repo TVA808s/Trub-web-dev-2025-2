@@ -8,7 +8,7 @@ from functools import wraps
 from proj_code.repositories.user_repository import UserRepository
 from proj_code.repositories.role_repository import RoleRepository
 from proj_code.db import db
-
+from math import ceil
 
 user_repository = UserRepository(db)
 role_repository = RoleRepository(db)
@@ -94,14 +94,18 @@ def handler():
 
 @bp.route('/')
 def index():
-    meetings = user_repository.get_all_meetings()
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 10, type=int)
+    meetings, total = user_repository.get_all_meetings(page, per_page)
+    total_pages = ceil(total / per_page)
+
     role = ''
     if current_user.is_authenticated:
         sender = user_repository.get_by_id(current_user.id)
         if sender:
             sender_role = role_repository.get_by_id(sender.role)
             role = sender_role.name
-    return render_template('users/index.html', role = role, meetings = meetings)
+    return render_template('users/index.html', role = role, meetings = meetings, current_page = page, total_pages = total_pages)
 
 @bp.route('/<int:meeting_id>')
 @login_required
