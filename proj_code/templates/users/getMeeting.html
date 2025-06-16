@@ -30,7 +30,7 @@
                         <h2 class="h4 mb-0">Описание мероприятия</h2>
                     </div>
                     <div class="card-body markdown-content">
-                        {{ meeting.description|markdown }}
+                        {{ meeting.description }}
                     </div>
                 </div>
             </div>
@@ -56,7 +56,7 @@
                                 {% if meeting.volunteers_count >= meeting.volunteers_amount %}
                                     <span class="badge bg-danger">Регистрация закрыта</span>
                                 {% else %}
-                                    <span class="badge bg-success">Идёт набор</span>
+                                    <span class="badge bg-success">Идёт набор волонтёров</span>
                                 {% endif %}
                             </span>
                         </div>
