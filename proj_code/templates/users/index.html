@@ -58,7 +58,7 @@
             <!-- Кнопка "Назад" -->
             <li class="page-item {% if current_page == 1 %}disabled{% endif %}">
                 <a class="page-link" href="{{ url_for('users.index', page=current_page-1) }}">
-                    &laquo; Назад
+                    Назад
                 </a>
             </li>
             
@@ -72,7 +72,7 @@
             <!-- Кнопка "Вперед" -->
             <li class="page-item {% if current_page == total_pages %}disabled{% endif %}">
                 <a class="page-link" href="{{ url_for('users.index', page=current_page+1) }}">
-                    Вперед &raquo;
+                    Вперед
                 </a>
             </li>
         </ul>
