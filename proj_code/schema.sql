@@ -41,7 +41,7 @@ CREATE TABLE users (
 
 CREATE TABLE roles (
     id INT PRIMARY KEY,
-    title VARCHAR(16) NOT NULL,
+    name VARCHAR(16) NOT NULL,
     description TEXT
 ) ENGINE INNODB;
 
