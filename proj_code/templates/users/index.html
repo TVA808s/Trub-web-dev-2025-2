@@ -26,9 +26,9 @@
                 <td> {{ meeting.volunteers_amount }} </td>
                 <td> {% if meeting.count >= meeting.volunteers_amount %} Регистрация закрыта {% else %} Идёт набор волонтёров {% endif %}</td>
                 <td>
-                    <a class="btn btn-primary" href="{{ url_for('') }}"> Просмотр </a>
+                    <a class="btn btn-primary" > Просмотр </a>
                 {% if role != 'Пользователь' %}
-                    <a class="btn btn-primary" href="{{ url_for('') }}"> Редактирование </a>
+                    <a class="btn btn-primary" > Редактирование </a>
                 {% endif %}
 
                 {% if role == 'Администратор' %}
@@ -48,7 +48,7 @@
         </tbody>
     </table>
     {% if role == 'Администратор' %}
-    <a href="{{ url_for('') }}" class="btn btn-primary">Добавить мероприятие</a>
+    <a  class="btn btn-primary">Добавить мероприятие</a>
     {% endif %}
 
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
