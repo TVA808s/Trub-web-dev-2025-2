@@ -90,13 +90,14 @@ def handler():
 
 @bp.route('/')
 def index():
+    meetings = user_repository.get_all_meetings()
     role = ''
     if current_user.is_authenticated:
         sender = user_repository.get_by_id(current_user.id)
         if sender:
             sender_role = role_repository.get_by_id(sender.role)
             role = sender_role.name
-    return render_template('users/index.html', role = role)
+    return render_template('users/index.html', role = role, meetings = meetings)
 
 @bp.route('/<int:user_id>')
 @login_required

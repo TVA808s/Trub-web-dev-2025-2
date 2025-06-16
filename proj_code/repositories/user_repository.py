@@ -1,7 +1,15 @@
+import datetime
 class UserRepository:
     def __init__(self, db_connector):
         self.db_connector = db_connector
         
+
+    def get_all_meetings(self):
+        with self.db_connector.connect().cursor(named_tuple=True) as cursor:
+            cursor.execute("SELECT * FROM meetings WHERE date > %s", (datetime.date.today()))
+            meetings = cursor.fetchall()
+        return meetings
+
     def get_by_id(self, user_id):
         with self.db_connector.connect().cursor(named_tuple=True) as cursor:
             cursor.execute("SELECT * FROM users WHERE id = %s;", (user_id,))
