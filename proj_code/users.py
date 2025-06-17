@@ -74,7 +74,7 @@ def login():
         
         if user is not None:
             flash('Авторизация прошла успешно', 'success')
-            login_user(User(user.id, user.login, user.role), remember=remember_me)
+            login_user(User(user.id, user.login, user.role, user.full_name), remember=remember_me)
             next_url = request.args.get('next', url_for('users.index'))
             return redirect(next_url)
         
