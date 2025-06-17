@@ -1,18 +1,23 @@
 function modalShown(event) {
     const button = event.relatedTarget;
     const meetingId = button.getAttribute('data-meeting-id');
-    const contacts = document.getElementById('contacts')
-    const contacts_text = contacts.value
-    const newUrl = `/users/${meetingId}/registrate`;
-    const form = document.getElementById('deleteModalForm');
-    
-    // данные пользователя из data-атрибутов
     const meetingTitle = button.getAttribute('data-meeting-title');
-    const modalRegMeeting = document.getElementById('modalRegMeeting');
-    modalRegMeeting.textContent = `${meetingTitle}`;
-    form.action = newUrl;
     
+    const modalRegMeeting = document.getElementById('modalRegMeeting');
+    if (modalRegMeeting) {
+        modalRegMeeting.textContent = meetingTitle;
+    }
+    
+    const form = document.getElementById('createForm');
+    form.action = `/users/${meetingId}/registrate`;
+    
+    const contactsInput = document.getElementById('contacts');
+    if (contactsInput) {
+        contactsInput.value = '';
+    }
 }
 
-let modal = document.getElementById('deleteModal');
-modal.addEventListener('show.bs.modal', modalShown);
+let modal = document.getElementById('createModal');
+if (modal) {
+    modal.addEventListener('show.bs.modal', modalShown);
+}
