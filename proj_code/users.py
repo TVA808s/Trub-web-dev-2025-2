@@ -147,8 +147,7 @@ def getMeeting(meeting_id):
     if current_user.is_authenticated:
         sender = user_repository.get_by_id(current_user.id)
         if sender:
-            # Исправлено: используем role_id вместо role
-            sender_role = role_repository.get_by_id(sender.role_id)
+            sender_role = role_repository.get_by_id(sender.role)
             role = sender_role.name if sender_role else ''
             already_registr = user_repository.get_reg_user_or_not(meeting_id, current_user.id)
 
