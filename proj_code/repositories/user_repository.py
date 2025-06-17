@@ -124,7 +124,7 @@ class UserRepository:
     
     def get_by_login_and_password(self, login, password):
         with self.db_connector.connect().cursor(named_tuple=True) as cursor:
-            cursor.execute("SELECT * FROM users WHERE login = %s AND password = SHA2(%s, 256);", (login, password))
+            cursor.execute("SELECT u.*, CONCAT_WS(' ', u.last_name, u.first_name, u.middle_name) as full_name FROM users u WHERE u.login = %s AND u.password = SHA2(%s, 256);", (login, password))
             user = cursor.fetchone()
         return user
     
