@@ -67,9 +67,11 @@
         </div>
     </div>
     <div class="d-grid gap-2 mt-4">
-        {% if meeting.volunteers_count < meeting.volunteers_amount and already_registr %}
+        {% if not already_registr and meeting.volunteers_count < meeting.volunteers_amount %}
+            <a href="{{ url_for('users.register_for_meeting', meeting_id=meeting.id) }}" class="btn btn-primary">
             Зарегистрироваться
-        {% else %}
+            </a>
+        {% elif already_registr %}
             <h3>Вы уже зарегистрированны</h3>
             <table>
                  <thead>
@@ -87,6 +89,7 @@
                     </tr>
                 </tbody>
             </table>
+            
         {% endif %}
     </div>
 

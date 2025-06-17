@@ -120,35 +120,45 @@ def index():
 def getMeeting(meeting_id):
     action = request.args.get('action')
     registration_id = request.args.get('registration_id')
+    
+    # Обработка действий с заявками
     if action and registration_id:
         if action == 'accept':
             user_repository.set_status(registration_id, 'accepted')
             flash('Заявка принята', 'success')
+            
+            # После принятия заявки проверяем лимит
+            meeting = user_repository.get_meeting_by_id(meeting_id)
+            if meeting and meeting.volunteers_amount > 0 and meeting.volunteers_count >= meeting.volunteers_amount:
+                user_repository.reject_all_pending(meeting_id)
+                flash('Лимит волонтеров достигнут. Оставшиеся заявки отклонены.', 'info')
+                
         elif action == 'reject':
             user_repository.set_status(registration_id, 'rejected')
             flash('Заявка отклонена', 'warning')
-    if action == 'registration':
-        user_repository
+
     meeting = user_repository.get_meeting_by_id(meeting_id)
     if meeting is None:
         flash('Мероприятие не найдено', 'danger')
         return redirect(url_for('users.index'))
-    if meeting.volunteers_amount <= meeting.volunteers_count:
-        user_repository.reject_all_pending(meeting_id)
-
+    
     role = ''
-    already_registr = False
+    already_registr = None
     if current_user.is_authenticated:
         sender = user_repository.get_by_id(current_user.id)
         if sender:
-            sender_role = role_repository.get_by_id(sender.role)
-            role = sender_role.name
+            # Исправлено: используем role_id вместо role
+            sender_role = role_repository.get_by_id(sender.role_id)
+            role = sender_role.name if sender_role else ''
             already_registr = user_repository.get_reg_user_or_not(meeting_id, current_user.id)
-    if role == 'Администратор' or role == 'Модератор':
+
+    # Всегда показываем списки волонтеров для админов/модераторов
+    if role in ['Администратор', 'Модератор']:
         accepted_volunteers = user_repository.get_accepted_volunteers(meeting_id)
         pending_volunteers = user_repository.get_pending_volunteers(meeting_id)
     else:
-        accepted_volunteers, pending_volunteers = [], []
+        accepted_volunteers = []
+        pending_volunteers = []
 
     return render_template(
         'users/getMeeting.html',
@@ -156,7 +166,7 @@ def getMeeting(meeting_id):
         accepted_volunteers=accepted_volunteers,
         pending_volunteers=pending_volunteers,
         role=role,
-        already_registr = already_registr
+        already_registr=already_registr
     )
 
 
