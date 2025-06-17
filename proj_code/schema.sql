@@ -41,7 +41,7 @@ CREATE TABLE registration_table (
     FOREIGN KEY (volunteer) REFERENCES users(id) ON DELETE CASCADE,
     contacts VARCHAR(64) NOT NULL,
     date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    status VARCHAR(16) NOT NULL
+    status VARCHAR(16) DEFAULT 'pending'
 );
 
 
