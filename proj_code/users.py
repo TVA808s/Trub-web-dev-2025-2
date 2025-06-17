@@ -26,7 +26,7 @@ def check_rights(req_role):
         @wraps(func) 
         def decorated_function(*args, **kwargs):
             if not current_user.is_authenticated:
-                flash('Войдите в аккаутн.', 'danger')
+                flash('Для выполнения данного действия необходимо пройти процедуру аутентификации', 'danger')
                 return redirect(url_for('users.login'))
             
             user = user_repository.get_by_id(current_user.id)
@@ -122,21 +122,27 @@ def getMeeting(meeting_id):
     registration_id = request.args.get('registration_id')
     
     # Обработка действий с заявками
-    if current_user.is_authenticated and action and registration_id and (current_user.role == 'Модератор' or current_user.role == 'Администратор'):
-        if action == 'accept':
-            user_repository.set_status(registration_id, 'accepted')
-            flash('Заявка принята', 'success')
-            
-            # После принятия заявки проверяем лимит
-            meeting = user_repository.get_meeting_by_id(meeting_id)
-            if meeting and meeting.volunteers_amount > 0 and meeting.volunteers_count >= meeting.volunteers_amount:
-                user_repository.reject_all_pending(meeting_id)
-                flash('Лимит волонтеров достигнут. Оставшиеся заявки отклонены.', 'info')
+    if current_user.is_authenticated:
+        if action and registration_id and (current_user.role == 'Модератор' or current_user.role == 'Администратор'):
+            if action == 'accept':
+                user_repository.set_status(registration_id, 'accepted')
+                flash('Заявка принята', 'success')
                 
-        elif action == 'reject':
-            user_repository.set_status(registration_id, 'rejected')
-            flash('Заявка отклонена', 'warning')
-
+                # После принятия заявки проверяем лимит
+                meeting = user_repository.get_meeting_by_id(meeting_id)
+                if meeting and meeting.volunteers_amount > 0 and meeting.volunteers_count >= meeting.volunteers_amount:
+                    user_repository.reject_all_pending(meeting_id)
+                    flash('Лимит волонтеров достигнут. Оставшиеся заявки отклонены.', 'info')
+                    
+            elif action == 'reject':
+                user_repository.set_status(registration_id, 'rejected')
+                flash('Заявка отклонена', 'warning')
+        else:
+            flash('У вас недостаточно прав', 'danger')
+    else:
+        flash('Для выполнения данного действия необходимо пройти процедуру аутентификации', 'danger')
+        return redirect(url_for('users.login'))
+    
     meeting = user_repository.get_meeting_by_id(meeting_id)
     if meeting is None:
         flash('Мероприятие не найдено', 'danger')
