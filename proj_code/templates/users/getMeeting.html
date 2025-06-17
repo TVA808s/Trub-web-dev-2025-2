@@ -69,12 +69,12 @@
     <div class="d-grid gap-2 mt-4">
         {% if not already_registr and meeting.volunteers_count < meeting.volunteers_amount %}
             <button type="button" 
-                    class="btn" 
+                    class="btn btn-primary fs-3" 
                     data-bs-toggle="modal" 
                     data-bs-target="#deleteModal"
                     data-meeting-title="{{ meeting.title }}"
                     data-meeting-id="{{ meeting.id }}">
-                Удалить
+                Зарегистрироваться
             </button>
         {% elif already_registr %}
             <h3>Вы уже зарегистрированны</h3>
