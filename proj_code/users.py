@@ -117,7 +117,6 @@ def index():
     )
 
 @bp.route('/<int:meeting_id>')
-@login_required
 def getMeeting(meeting_id):
     action = request.args.get('action')
     registration_id = request.args.get('registration_id')
@@ -136,8 +135,17 @@ def getMeeting(meeting_id):
     if meeting.volunteers_amount <= meeting.volunteers_count:
         user_repository.reject_all_pending(meeting_id)
 
-    accepted_volunteers = user_repository.get_accepted_volunteers(meeting_id)
-    pending_volunteers = user_repository.get_pending_volunteers(meeting_id)
+    role = ''
+    if current_user.is_authenticated:
+        sender = user_repository.get_by_id(current_user.id)
+        if sender:
+            sender_role = role_repository.get_by_id(sender.role)
+            role = sender_role.name
+    if role == 'Администратор' or role == 'Модератор':
+        accepted_volunteers = user_repository.get_accepted_volunteers(meeting_id)
+        pending_volunteers = user_repository.get_pending_volunteers(meeting_id)
+    else:
+        accepted_volunteers, pending_volunteers = [], []
 
     return render_template(
         'users/getMeeting.html',
