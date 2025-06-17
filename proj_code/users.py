@@ -143,7 +143,7 @@ def getMeeting(meeting_id):
         return redirect(url_for('users.index'))
     
     role = ''
-    already_registr = False
+    already_registr = []
     if current_user.is_authenticated:
         sender = user_repository.get_by_id(current_user.id)
         if sender:
