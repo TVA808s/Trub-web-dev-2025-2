@@ -122,8 +122,8 @@ def getMeeting(meeting_id):
     registration_id = request.args.get('registration_id')
     
     # Обработка действий с заявками
-    if current_user.is_authenticated:
-        if action and registration_id and (current_user.role == 'Модератор' or current_user.role == 'Администратор'):
+    if current_user.is_authenticated and action and registration_id:
+        if current_user.role == 'Модератор' or current_user.role == 'Администратор':
             if action == 'accept':
                 user_repository.set_status(registration_id, 'accepted')
                 flash('Заявка принята', 'success')
