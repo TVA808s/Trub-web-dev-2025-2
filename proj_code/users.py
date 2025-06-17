@@ -206,7 +206,7 @@ def delete(meeting_id):
         flash(f'Ошибка при удалении: {e}', 'danger')
     return redirect(url_for('users.index'))
 
-@bp.route('/<int:meeting_id/registrate', methods=['POST'])
+@bp.route('/<int:meeting_id>/registrate', methods=['POST'])
 @login_required
 def registrate(meeting_id):
     try:
