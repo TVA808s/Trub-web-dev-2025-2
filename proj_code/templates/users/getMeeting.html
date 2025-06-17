@@ -93,7 +93,7 @@
         {% endif %}
     </div>
 
-    {% if role and role != 'Пользователь' and len(accepted_volunteers) > 0 %}
+    {% if role and role != 'Пользователь' and accepted_volunteers %}
     <h2>Принятые волонтёры</h2>
     <table class="table">
         <thead>
@@ -114,7 +114,7 @@
         </tbody>
     </table>
     {% endif %}
-    {% if role == 'Модератор' and len(pending_volunteers) > 0 %}
+    {% if role == 'Модератор' and pending_volunteers %}
     <h2>Ожидающие волонтёры</h2>
     <table class="table">
         <thead>

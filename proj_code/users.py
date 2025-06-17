@@ -143,7 +143,7 @@ def getMeeting(meeting_id):
         return redirect(url_for('users.index'))
     
     role = ''
-    already_registr = []
+    already_registr = False
     if current_user.is_authenticated:
         sender = user_repository.get_by_id(current_user.id)
         if sender:
@@ -156,8 +156,8 @@ def getMeeting(meeting_id):
         accepted_volunteers = user_repository.get_accepted_volunteers(meeting_id)
         pending_volunteers = user_repository.get_pending_volunteers(meeting_id)
     else:
-        accepted_volunteers = []
-        pending_volunteers = []
+        accepted_volunteers = False
+        pending_volunteers = False
 
     return render_template(
         'users/getMeeting.html',
