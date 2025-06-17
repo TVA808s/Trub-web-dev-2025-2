@@ -136,11 +136,10 @@ def getMeeting(meeting_id):
         elif action == 'reject':
             user_repository.set_status(registration_id, 'rejected')
             flash('Заявка отклонена', 'warning')
-    else:
-        if not current_user.is_authenticated:
-            flash('Для выполнения данного действия необходимо пройти процедуру аутентификации', 'danger')
-            return redirect(url_for('users.login'))
-        else:
+    elif action and registration_id and not current_user.is_authenticated:
+        flash('Для выполнения данного действия необходимо пройти процедуру аутентификации', 'danger')
+        return redirect(url_for('users.login'))
+    elif action and registration_id:
             flash('У вас недостаточно прав', 'danger')
         
     
