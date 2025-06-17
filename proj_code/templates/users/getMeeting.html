@@ -68,7 +68,7 @@
     </div>
     <div class="d-grid gap-2 mt-4">
         {% if not already_registr and meeting.volunteers_count < meeting.volunteers_amount %}
-            <a href="{{ url_for('users.register_for_meeting', meeting_id=meeting.id) }}" class="btn btn-primary">
+            <a >
             Зарегистрироваться
             </a>
         {% elif already_registr %}
