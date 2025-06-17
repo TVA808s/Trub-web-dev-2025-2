@@ -67,7 +67,7 @@
         </div>
     </div>
     <div class="d-grid gap-2 mt-4">
-        {% if current_user and not already_registr and meeting.volunteers_count < meeting.volunteers_amount %}
+        {% if role and not already_registr and meeting.volunteers_count < meeting.volunteers_amount %}
             <button type="button" 
                 class="btn btn-primary" 
                 data-bs-toggle="modal" 

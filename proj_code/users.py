@@ -142,7 +142,7 @@ def getMeeting(meeting_id):
         flash('Мероприятие не найдено', 'danger')
         return redirect(url_for('users.index'))
     
-    role = ''
+    role = False
     already_registr = False
     if current_user.is_authenticated:
         sender = user_repository.get_by_id(current_user.id)
