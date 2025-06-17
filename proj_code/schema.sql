@@ -108,6 +108,4 @@ VALUES
 (4, 2, 'moder@example.com', '2024-08-02 13:45:00', 'pending'),
 (4, 1, 'admin@example.com', '2024-08-01 12:30:00', 'pending'),
 
-(5, 3, 'user@example.com', '2024-07-22 09:45:00', 'accepted'),
-(5, 2, 'moder@example.com', '2024-08-02 13:45:00', 'pending'),
 (5, 1, 'admin@example.com', '2024-08-01 12:30:00', 'pending');

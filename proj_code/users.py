@@ -206,6 +206,16 @@ def delete(meeting_id):
         flash(f'Ошибка при удалении: {e}', 'danger')
     return redirect(url_for('users.index'))
 
+@bp.route('/<int:meeting_id/registrate', methods=['POST'])
+@login_required
+def registrate(meeting_id):
+    try:
+        user_repository.registrate(meeting_id, current_user.id)
+        flash('Запись успешно создана', 'success')
+    except Exception as e:
+        flash(f'Ошибка при создании: {e}', 'danger')
+    return redirect(url_for('users.getMeeting', meeting_id=meeting_id))  
+
 @bp.route('/<int:user_id>/updateName', methods = ['POST', 'GET'])
 @login_required
 def updateName(user_id):
