@@ -119,7 +119,7 @@
         </tbody>
     </table>
     {% endif %}
-    {% if role == 'Модератор' and pending_volunteers %}
+    {% if (role == 'Модератор' or role == 'Администратор') and pending_volunteers %}
     <h2>Ожидающие волонтёры</h2>
     <table class="table">
         <thead>
