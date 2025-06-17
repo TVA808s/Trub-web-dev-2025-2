@@ -122,26 +122,27 @@ def getMeeting(meeting_id):
     registration_id = request.args.get('registration_id')
     
     # Обработка действий с заявками
-    if current_user.is_authenticated and action and registration_id:
-        if current_user.role == 'Модератор' or current_user.role == 'Администратор':
-            if action == 'accept':
-                user_repository.set_status(registration_id, 'accepted')
-                flash('Заявка принята', 'success')
+    if action and registration_id and (current_user.role == 'Модератор' or current_user.role == 'Администратор'):
+        if action == 'accept':
+            user_repository.set_status(registration_id, 'accepted')
+            flash('Заявка принята', 'success')
+            
+            # После принятия заявки проверяем лимит
+            meeting = user_repository.get_meeting_by_id(meeting_id)
+            if meeting and meeting.volunteers_amount > 0 and meeting.volunteers_count >= meeting.volunteers_amount:
+                user_repository.reject_all_pending(meeting_id)
+                flash('Лимит волонтеров достигнут. Оставшиеся заявки отклонены.', 'info')
                 
-                # После принятия заявки проверяем лимит
-                meeting = user_repository.get_meeting_by_id(meeting_id)
-                if meeting and meeting.volunteers_amount > 0 and meeting.volunteers_count >= meeting.volunteers_amount:
-                    user_repository.reject_all_pending(meeting_id)
-                    flash('Лимит волонтеров достигнут. Оставшиеся заявки отклонены.', 'info')
-                    
-            elif action == 'reject':
-                user_repository.set_status(registration_id, 'rejected')
-                flash('Заявка отклонена', 'warning')
+        elif action == 'reject':
+            user_repository.set_status(registration_id, 'rejected')
+            flash('Заявка отклонена', 'warning')
+    else:
+        if not current_user.is_authenticated:
+            flash('Для выполнения данного действия необходимо пройти процедуру аутентификации', 'danger')
+            return redirect(url_for('users.login'))
         else:
             flash('У вас недостаточно прав', 'danger')
-    else:
-        flash('Для выполнения данного действия необходимо пройти процедуру аутентификации', 'danger')
-        return redirect(url_for('users.login'))
+        
     
     meeting = user_repository.get_meeting_by_id(meeting_id)
     if meeting is None:
