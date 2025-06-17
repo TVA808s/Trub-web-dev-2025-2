@@ -56,7 +56,7 @@ class User(UserMixin):
 def load_user(user_id):
     user = user_repository.get_by_id(user_id)
     if user is not None:
-        return User(user.id, user.login, user.role)
+        return User(user.id, user.login, user.role, user.full_name)
     return None
 
 
