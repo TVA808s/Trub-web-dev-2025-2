@@ -118,7 +118,7 @@ class UserRepository:
 
     def get_by_id(self, user_id):
         with self.db_connector.connect().cursor(named_tuple=True) as cursor:
-            cursor.execute("SELECT * FROM users WHERE id = %s;", (user_id,))
+            cursor.execute("SELECT *, CONCAT_WS(' ', u.last_name, u.first_name, u.middle_name) as full_name FROM users WHERE id = %s;", (user_id,))
             user = cursor.fetchone()
         return user
     

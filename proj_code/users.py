@@ -46,10 +46,11 @@ def check_rights(req_role):
 
 
 class User(UserMixin):
-    def __init__(self, user_id, login, role):
+    def __init__(self, user_id, login, role, full_name):
         self.id = user_id
         self.login = login
         self.role = role
+        self.full_name = full_name
 
 @login_manager.user_loader
 def load_user(user_id):
