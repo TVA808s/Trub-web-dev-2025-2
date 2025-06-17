@@ -40,7 +40,7 @@ CREATE TABLE registration_table (
     volunteer INT NOT NULL,
     FOREIGN KEY (volunteer) REFERENCES users(id) ON DELETE CASCADE,
     contacts VARCHAR(64) NOT NULL,
-    date TIMESTAMP NOT NULL,
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status VARCHAR(16) NOT NULL
 );
 

@@ -110,6 +110,11 @@ class UserRepository:
             reg = cursor.fetchone()
         return reg
 
+    def registrate(self, meeting_id, user_id, contacts):
+        connection = self.db_connector.connect()
+        with connection.cursor() as cursor:
+            cursor.execute("INSERT INTO registration_table (meeting, volunteer, contacts) values (%s,%s,%s);", (meeting_id, user_id, contacts))
+            connection.commit()
 
     def get_by_id(self, user_id):
         with self.db_connector.connect().cursor(named_tuple=True) as cursor:
