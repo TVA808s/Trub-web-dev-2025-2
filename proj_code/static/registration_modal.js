@@ -8,7 +8,7 @@ function modalShown(event) {
     const meetingTitle = button.getAttribute('data-meeting-title');
 
     
-    const modalRegMeeting = document.getElementById('modalMeetingName');
+    const modalRegMeeting = document.getElementById('modalRegMeeting');
     modalRegMeeting.textContent = `${meetingTitle}`;
     form.action = newUrl;
 }
