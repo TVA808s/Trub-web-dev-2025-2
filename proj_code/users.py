@@ -78,7 +78,7 @@ def login():
             next_url = request.args.get('next', url_for('users.index'))
             return redirect(next_url)
         
-        flash('Невозможно аутентифицироваться с указанными логином и паролем», предлагается заново заполнить форму', 'danger')
+        flash('Невозможно аутентифицироваться с указанными логином и паролем', 'danger')
 
     return render_template('users/login.html', title='Войти')
 
