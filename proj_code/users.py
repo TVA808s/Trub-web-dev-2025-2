@@ -78,7 +78,7 @@ def login():
             next_url = request.args.get('next', url_for('users.index'))
             return redirect(next_url)
         
-        flash('Пользователь не найден, проверьте корректность введенных данных', 'danger')
+        flash('Невозможно аутентифицироваться с указанными логином и паролем», предлагается заново заполнить форму', 'danger')
 
     return render_template('users/login.html', title='Войти')
 
@@ -96,7 +96,7 @@ def handler():
 @bp.route('/')
 def index():
     page = request.args.get('page', 1, type=int)
-    per_page = 2
+    per_page = 10
     meetings, total = user_repository.get_all_meetings(page, per_page)
     total_pages = ceil(total / per_page) if total > 0 else 1
     if page < 1 or (total_pages > 0 and page > total_pages):
