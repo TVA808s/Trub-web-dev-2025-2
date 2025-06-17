@@ -104,6 +104,13 @@ class UserRepository:
             )
             connection.commit()
 
+    def get_reg_user_or_not(self, meeting_id, user_id):
+        with self.db_connector.connect().cursor(named_tuple=True) as cursor:
+            cursor.execute("SELECT * FROM registration_table WHERE meeting = %s AND volunteer = %s", (meeting_id, user_id))
+            reg = cursor.fetchone()
+        return reg
+
+
     def get_by_id(self, user_id):
         with self.db_connector.connect().cursor(named_tuple=True) as cursor:
             cursor.execute("SELECT * FROM users WHERE id = %s;", (user_id,))

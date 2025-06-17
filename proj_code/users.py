@@ -127,7 +127,8 @@ def getMeeting(meeting_id):
         elif action == 'reject':
             user_repository.set_status(registration_id, 'rejected')
             flash('Заявка отклонена', 'warning')
-
+    if action == 'registration':
+        user_repository
     meeting = user_repository.get_meeting_by_id(meeting_id)
     if meeting is None:
         flash('Мероприятие не найдено', 'danger')
@@ -136,11 +137,13 @@ def getMeeting(meeting_id):
         user_repository.reject_all_pending(meeting_id)
 
     role = ''
+    already_registr = False
     if current_user.is_authenticated:
         sender = user_repository.get_by_id(current_user.id)
         if sender:
             sender_role = role_repository.get_by_id(sender.role)
             role = sender_role.name
+            already_registr = user_repository.get_reg_user_or_not(meeting_id, current_user.id)
     if role == 'Администратор' or role == 'Модератор':
         accepted_volunteers = user_repository.get_accepted_volunteers(meeting_id)
         pending_volunteers = user_repository.get_pending_volunteers(meeting_id)
@@ -151,7 +154,9 @@ def getMeeting(meeting_id):
         'users/getMeeting.html',
         meeting=meeting,
         accepted_volunteers=accepted_volunteers,
-        pending_volunteers=pending_volunteers
+        pending_volunteers=pending_volunteers,
+        role=role,
+        already_registr = already_registr
     )
 
 

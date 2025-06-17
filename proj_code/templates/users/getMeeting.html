@@ -61,19 +61,35 @@
                                 {% endif %}
                             </span>
                         </div>
-                        <div class="d-grid gap-2 mt-4">
-                            {% if meeting.volunteers_count < meeting.volunteers_amount %}
-                                <button class="btn btn-primary btn-lg">
-                                    <i class="bi bi-person-plus"></i> Зарегистрироваться
-                                </button>
-                            {% endif %}
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <div class="d-grid gap-2 mt-4">
+        {% if meeting.volunteers_count < meeting.volunteers_amount and already_registr %}
+            Зарегистрироваться
+        {% else %}
+            <table>
+                 <thead>
+                    <tr>
+                        <th>ФИО</th>
+                        <th>Контакты</th>
+                        <th>Дата регистрации</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>already_registr.date</td>
+                        <td>already_registr.status</td>
+                        <td>already_registr.contacts</td>
+                    </tr>
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
 
+    {% if role != 'Пользователь' %}
     <h2>Принятые волонтёры</h2>
     <table class="table">
         <thead>
@@ -93,7 +109,8 @@
             {% endfor %}
         </tbody>
     </table>
-    
+    {% endif %}
+    {% if role == 'Модератор' %}
     <h2>Ожидающие волонтёры</h2>
     <table class="table">
         <thead>
@@ -121,5 +138,5 @@
             {% endfor %}
         </tbody>
     </table>
-
+    {% endif %}
 {% endblock %}
