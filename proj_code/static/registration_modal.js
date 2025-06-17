@@ -13,5 +13,5 @@ function modalShown(event) {
     form.action = newUrl;
 }
 
-let modal = document.getElementById('registrate');
+let modal = document.getElementById('deleteModal');
 modal.addEventListener('show.bs.modal', modalShown);
