@@ -1,5 +1,4 @@
 DROP TABLE IF EXISTS registration_table;
-DROP TABLE IF EXISTS visit_logs;
 DROP TABLE IF EXISTS meetings;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS roles;
