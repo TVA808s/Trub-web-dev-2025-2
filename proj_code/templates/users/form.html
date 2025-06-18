@@ -89,13 +89,13 @@
     </div>
 
     <div class="mb-3">
-        <label for="amount" class="form-label">Количество волонтеров</label>
-        <input type="text" name="amount" id="amount" class="form-control {% if errors.amount %}is-invalid{% elif meeting.amount %}is-valid{% endif %}" value="{{ meeting.amount or ''}}" required>
-         {% if errors.amount %}
+        <label for="volunteers_amount" class="form-label">Количество волонтеров</label>
+        <input type="text" name="volunteers_amount" id="volunteers_amount" class="form-control {% if errors.volunteers_amount %}is-invalid{% elif meeting.volunteers_amount %}is-valid{% endif %}" value="{{ meeting.volunteers_amount or ''}}" required>
+         {% if errors.volunteers_amount %}
             <div class="invalid-feedback">
-                {{errors.amount}}
+                {{errors.volunteers_amount}}
             </div>
-        {% elif not meeting.amount %}
+        {% elif not meeting.volunteers_amount %}
             <div class="invalid-feedback">
                 Введите требуемое количество волонтеров
             </div>
