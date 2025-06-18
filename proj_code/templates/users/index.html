@@ -39,11 +39,8 @@
                     {% if role == 'Администратор' %}
                         <button type="button" 
                                 class="btn btn-danger" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#deleteModal"
                                 data-meeting-title="{{ meeting.title }}"
-                                data-meeting-id="{{ meeting.id }}"
-                                onclick="event.stopPropagation()">
+                                data-meeting-id="{{ meeting.id }}">
                             Удалить
                         </button>
                     {% endif %}

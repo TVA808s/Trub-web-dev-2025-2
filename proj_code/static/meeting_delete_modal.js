@@ -1,18 +1,35 @@
 
-function modalShown(event) {
-    const button = event.relatedTarget;
-    const meetingId = button.getAttribute('data-meeting-id');
-    const newUrl = `/users/${meetingId}/delete`;
-    const form = document.getElementById('deleteModalForm');
+document.addEventListener('DOMContentLoaded', function() {
+    const modalElement = document.getElementById('deleteModal');
     
-    // данные пользователя из data-атрибутов
-    const meetingTitle = button.getAttribute('data-meeting-title');
-
+    if (!modalElement) {
+        console.error('Delete modal element not found');
+        return;
+    }
     
-    const modalUserName = document.getElementById('modalMeetingName');
-    modalUserName.textContent = `${meetingTitle}`;
-    form.action = newUrl;
-}
-
-let modal = document.getElementById('deleteModal');
-modal.addEventListener('show.bs.modal', modalShown);
+    // Инициализируем модальное окно через Bootstrap
+    const deleteModal = new bootstrap.Modal(modalElement);
+    
+    // Обработчик для кнопки удаления
+    document.querySelectorAll('[data-bs-target="#deleteModal"]').forEach(button => {
+        button.addEventListener('click', function() {
+            const meetingId = this.getAttribute('data-meeting-id');
+            const meetingTitle = this.getAttribute('data-meeting-title');
+            
+            // Обновляем содержимое модального окна
+            const nameSpan = document.getElementById('modalMeetingName');
+            if (nameSpan) {
+                nameSpan.textContent = meetingTitle;
+            }
+            
+            // Обновляем действие формы
+            const form = document.getElementById('deleteModalForm');
+            if (form) {
+                form.action = `/users/${meetingId}/delete`;
+            }
+            
+            // Показываем модальное окно
+            deleteModal.show();
+        });
+    });
+});
