@@ -16,7 +16,7 @@
                         <h2 class="h4 mb-0">Описание мероприятия</h2>
                     </div>
                     <div class="card-body p-0">
-                        <img src="{{ meeting.image }}" 
+                        <img src="{{ url_for('static', filename=meeting.image) }}" 
                             class="img-fluid rounded-top w-100" 
                             alt="Изображение не загрузилось" 
                             style="max-height: 400px; object-fit: cover;">

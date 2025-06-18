@@ -26,7 +26,7 @@ def create_app(test_config=None):
     login_manager.init_app(app)
     app.register_blueprint(users_bp)
     app.add_url_rule('/', 'index', index)
-   
+    
     return app
 
 app = create_app()

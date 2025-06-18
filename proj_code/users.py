@@ -22,6 +22,10 @@ login_manager.login_view = 'users.login'
 login_manager.login_message = 'Авторизуйтесь для доступа к ресурсу.'
 login_manager.login_message_category = 'warning'
 
+UPLOAD_FOLDER = 'static/uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+
+
 def check_rights(req_role):
     def decorator(func):
         @wraps(func) 
@@ -165,8 +169,9 @@ def getMeeting(meeting_id):
         already_registr=already_registr
     )
 
+
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'avif'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @bp.route('/createMeeting', methods = ['POST', 'GET'])
 @login_required
@@ -175,31 +180,34 @@ def createMeeting():
     meeting = {}
     errors = {}
     if request.method == 'POST':
-        fields = ('title', 'description', 'date', 'place', 'amount')
-        meeting = { field: cleaner.clean(request.form.get(field)) or None for field in fields }
-        meeting['image'] = ''
-        image = request.files['image']
+        fields = ('title', 'description', 'date', 'place', 'volunteers_amount')
+        meeting = {field: cleaner.clean(request.form.get(field)) or None for field in fields}
         meeting['organizer'] = current_user.id
 
-        if image.filename != '':
-            if image and allowed_file(image.filename):
-                filename = secure_filename(image.filename)
-                image.save(os.path.join('/static/uploads', filename))
-                image_path = os.path.join('/static/uploads', filename)
-                image.save(image_path)
-                meeting['image'] = image_path
-            else:
-                errors['image'] = 'Допустимые форматы: .png, .jpg, .jpeg'
+        if 'image' not in request.files:
+            errors['image'] = 'Файл изображения не найден'
         else:
-            errors['image'] = 'Выберите изображение'
-
-        try:
-            user_repository.create(**meeting)
-            flash('Мероприятие успешно создано', 'success')
-            return redirect(url_for('users.index'))
-        except connector.errors.DatabaseError:
-            flash('Произошла ошибка при создании мероприятия. Проверьте, что все необходимые поля заполнены', 'danger')
-            db.connect().rollback()
+            image = request.files['image']
+            
+            if image.filename == '':
+                errors['image'] = 'Выберите изображение'
+            elif image and allowed_file(image.filename):
+                filename = secure_filename(image.filename)
+                save_path = os.path.join(UPLOAD_FOLDER, filename)
+                image.save(save_path)
+                
+                # URL для сохранения в БД (относительный путь)
+                meeting['image'] = os.path.join('uploads', filename)
+            else:
+                errors['image'] = 'Допустимые форматы: .png, .jpg, .jpeg, .gif'
+        if not errors:
+            try:
+                user_repository.create(**meeting)
+                flash('Мероприятие успешно создано', 'success')
+                return redirect(url_for('users.index'))
+            except connector.errors.DatabaseError as e:
+                flash(f'Ошибка при создании {e}', 'danger')
+                db.connect().rollback()
 
     return render_template('users/createMeeting.html', meeting=meeting, errors=errors)
 
