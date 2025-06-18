@@ -14,3 +14,4 @@ zipp==3.17.0
 pytest
 mysql-connector-python==8.0.26
 bleach
+markdown

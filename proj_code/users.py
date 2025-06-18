@@ -10,6 +10,7 @@ from proj_code.db import db
 from math import ceil
 from bleach.sanitizer import Cleaner
 import os
+import markdown
 from werkzeug.utils import secure_filename
 cleaner = Cleaner()
 user_repository = UserRepository(db)
@@ -139,7 +140,7 @@ def getMeeting(meeting_id):
         return redirect(url_for('users.login'))
     elif action and registration_id:
             flash('У вас недостаточно прав', 'danger')
-        
+    
     role = False
     already_registr = False
     if current_user.is_authenticated:
@@ -157,6 +158,9 @@ def getMeeting(meeting_id):
         accepted_volunteers = False
         pending_volunteers = False
 
+    # markdown в html
+    meeting['description'] = markdown.markdown(meeting['description'])
+    
     return render_template(
         'users/getMeeting.html',
         meeting=meeting,
