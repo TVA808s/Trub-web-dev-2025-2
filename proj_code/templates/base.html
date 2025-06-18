@@ -77,6 +77,29 @@
           })
         })
       </script>
+      <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          // Проверка работы Bootstrap
+          console.log('Bootstrap loaded:', typeof bootstrap !== 'undefined');
+          
+          // Проверка элементов
+          const elements = {
+              deleteModal: document.getElementById('deleteModal'),
+              createModal: document.getElementById('createModal'),
+              deleteButtons: document.querySelectorAll('[data-bs-target="#deleteModal"]'),
+              createButtons: document.querySelectorAll('[data-bs-target="#createModal"]')
+          };
+          
+          console.log('Elements check:', elements);
+          
+          // Простая функция открытия модального окна
+          window.debugOpenModal = function(modalId) {
+              const modal = new bootstrap.Modal(document.getElementById(modalId));
+              modal.show();
+              console.log(`Manual open ${modalId}`, modal);
+          };
+      });
+      </script>
     {% endblock %}
   </body>
 </html>
