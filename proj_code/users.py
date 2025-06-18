@@ -181,7 +181,13 @@ def createMeeting():
     errors = {}
     if request.method == 'POST':
         fields = ('title', 'description', 'date', 'place', 'volunteers_amount')
-        meeting = {field: cleaner.clean(request.form.get(field)) or '' for field in fields}
+        for field in fields:
+            value = request.form.get(field)
+            if value is not None:
+                meeting[field] = cleaner.clean(value)
+            else:
+                meeting[field] = None
+                
         meeting['organizer'] = current_user.id
 
         if 'image' not in request.files:

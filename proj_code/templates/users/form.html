@@ -53,8 +53,8 @@
     </div>
 
     <div class="mb-3">
-        <label for="date" class="form-label">Дата</label>
-        <input type="text" name="date" id="date" class="form-control {% if errors.date %}is-invalid{% elif meeting.date %}is-valid{% endif %}" value="{{ meeting.date or ''}}" required>
+        <label for="date" class="form-label">Дата проведения</label>
+        <input type="date" name="date" id="date" class="form-control {% if errors.date %}is-invalid{% elif meeting.date %}is-valid{% endif %}" value="{{ meeting.date or ''}}" required>
          {% if errors.date %}
             <div class="invalid-feedback">
                 {{errors.date}}
@@ -90,7 +90,7 @@
 
     <div class="mb-3">
         <label for="volunteers_amount" class="form-label">Количество волонтеров</label>
-        <input type="text" name="volunteers_amount" id="volunteers_amount" class="form-control {% if errors.volunteers_amount %}is-invalid{% elif meeting.volunteers_amount %}is-valid{% endif %}" value="{{ meeting.volunteers_amount or ''}}" required>
+        <input type="number" name="volunteers_amount" id="volunteers_amount" min="1" class="form-control {% if errors.volunteers_amount %}is-invalid{% elif meeting.volunteers_amount %}is-valid{% endif %}" value="{{ meeting.volunteers_amount or ''}}" required>
          {% if errors.volunteers_amount %}
             <div class="invalid-feedback">
                 {{errors.volunteers_amount}}
