@@ -138,7 +138,7 @@ class UserRepository:
         connection = self.db_connector.connect()
         with connection.cursor(named_tuple=True) as cursor:
             query = (
-            "INSERT INTO meetings (title, description, date, place, amount, image, organizer) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+            "INSERT INTO meetings (title, description, date, place, volunteers_amount, image, organizer) VALUES (%s, %s, %s, %s, %s, %s, %s)"
             )
             meeting = (title, description, date, place, amount, image, organizer)
             cursor.execute(query, meeting)
