@@ -4,13 +4,20 @@ class UserRepository:
      
     def get_by_id(self, user_id):
         with self.db_connector.connect().cursor(named_tuple=True) as cursor:
-            cursor.execute("SELECT u.*, CONCAT_WS(' ', u.last_name, u.first_name, u.middle_name) as full_name FROM users u WHERE u.id = %s;", (user_id,))
+            cursor.execute("""
+                SELECT u.*, CONCAT_WS(' ', u.last_name, u.first_name, u.middle_name) as full_name, r.name as role_name
+                FROM users u 
+                LEFT JOIN roles r ON u.role = r.id
+                WHERE u.id = %s;""", (user_id,))
             user = cursor.fetchone()
         return user
     
     def get_by_login_and_password(self, login, password):
         with self.db_connector.connect().cursor(named_tuple=True) as cursor:
-            cursor.execute("SELECT u.*, CONCAT_WS(' ', u.last_name, u.first_name, u.middle_name) as full_name FROM users u WHERE u.login = %s AND u.password = SHA2(%s, 256);", (login, password))
+            cursor.execute("""SELECT u.*, CONCAT_WS(' ', u.last_name, u.first_name, u.middle_name) as full_name, r.name as role_name
+                FROM users u 
+                LEFT JOIN roles r ON u.role = r.id
+                WHERE u.login = %s AND u.password = SHA2(%s, 256);""", (login, password))
             user = cursor.fetchone()
         return user
     
@@ -19,4 +26,5 @@ class UserRepository:
             cursor.execute("SELECT * FROM registration_table WHERE meeting = %s AND volunteer = %s", (meeting_id, user_id))
             reg = cursor.fetchone()
         return reg
+    
    
