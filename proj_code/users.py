@@ -255,7 +255,6 @@ def editMeeting(meeting_id):
                 connection = user_repository.db_connector.connect()
                 connection.rollback()
         
-
     return render_template('users/editMeeting.html', meeting=meeting, errors=errors)
 
 

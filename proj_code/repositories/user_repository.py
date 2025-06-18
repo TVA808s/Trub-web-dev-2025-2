@@ -144,14 +144,14 @@ class UserRepository:
             cursor.execute(query, meeting)
             connection.commit()
             
-    def edit(self, meeting_id, title, description, date, place, volunteers_amount, image):
+    def edit(self, meeting_id, title, description, date, place, volunteers_amount):
         connection = self.db_connector.connect()
         with connection.cursor(named_tuple=True) as cursor:
             query = (
                 "UPDATE meetings SET title = %s, "
-                "description = %s, date = %s, place = %s, volunteers_amount = %s, image = %s WHERE id = %s"
+                "description = %s, date = %s, place = %s, volunteers_amount = %s WHERE id = %s"
             )
-            user_data = (title, description, date, place, volunteers_amount, image, meeting_id)
+            user_data = (title, description, date, place, volunteers_amount, meeting_id)
             cursor.execute(query, user_data)
             connection.commit()   
             
