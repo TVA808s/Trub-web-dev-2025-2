@@ -186,7 +186,7 @@ def createMeeting():
             value = request.form.get(field)        
             if value is '' or value is None:
                 errors[field] = 'Введите значение'
-                meeting[field] = None 
+                meeting[field] = '' 
             else:
                 meeting[field] = cleaner.clean(value)
 
