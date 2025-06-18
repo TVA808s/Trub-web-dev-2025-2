@@ -1,7 +1,4 @@
-# app.py
-import os
-from flask import Flask, session, request
-from flask_login import current_user, login_required
+from flask import Flask
 from proj_code.db import db
 import markdown
 
@@ -17,16 +14,13 @@ def create_app(test_config=None):
     # Инициализация базы данных
     db.init_app(app)
     
-    # Регистрация CLI-команд
-    from proj_code.cli import init_db_command  
-    app.cli.add_command(init_db_command)
-    
     # Регистрация блюпринтов
     from proj_code.users import bp as users_bp, index, login_manager
     login_manager.init_app(app)
     app.register_blueprint(users_bp)
     app.add_url_rule('/', 'index', index)
 
+    # Обработка markdown в html
     @app.template_filter('markdown')
     def markdown_filter(text):
         if not text:

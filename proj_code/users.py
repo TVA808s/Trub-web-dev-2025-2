@@ -1,20 +1,18 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for, current_app
 from flask_login import LoginManager, UserMixin, current_user, login_user, logout_user, login_required
 import mysql.connector as connector
-from proj_code.validators.password_validator import password_validator
-from proj_code.validators.login_validator import login_validator
 from functools import wraps
 from proj_code.repositories.user_repository import UserRepository
-from proj_code.repositories.role_repository import RoleRepository
+from proj_code.repositories.meeting_repository import MeetingRepository
 from proj_code.db import db
 from math import ceil
 from bleach.sanitizer import Cleaner
 import os
-
 from werkzeug.utils import secure_filename
+
 cleaner = Cleaner()
+meeting_repository = MeetingRepository(db)
 user_repository = UserRepository(db)
-role_repository = RoleRepository(db)
 
 bp = Blueprint('users', __name__, url_prefix='/users')
 
@@ -32,14 +30,11 @@ def check_rights(req_role):
                 flash('Для выполнения данного действия необходимо пройти процедуру аутентификации', 'danger')
                 return redirect(url_for('users.login'))
             
-            user = user_repository.get_by_id(current_user.id)
-            role = role_repository.get_by_id(user.role)
-            
-            if req_role == 'Администратор' and role.name != 'Администратор':
+            if req_role == 'Администратор' and current_user.role != 'Администратор':
                 flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
                 return redirect(url_for('users.index'))
 
-            if req_role == 'Модератор' and role.name not in ['Модератор', 'Администратор']:                
+            if req_role == 'Модератор' and current_user.role not in ['Модератор', 'Администратор']:                
                 flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
                 return redirect(url_for('users.index'))
             
@@ -92,18 +87,16 @@ def handler():
 def index():
     page = request.args.get('page', 1, type=int)
     per_page = 10
-    meetings, total = user_repository.get_all_meetings(page, per_page)
+    meetings, total = meeting_repository.get_all_meetings(page, per_page)
     total_pages = ceil(total / per_page) if total > 0 else 1
     if page < 1 or (total_pages > 0 and page > total_pages):
         flash('Запрошенная страница не существует', 'warning')
         return redirect(url_for('users.index'))
     
-    role = ''
+    role = False
     if current_user.is_authenticated:
-        sender = user_repository.get_by_id(current_user.id)
-        if sender:
-            sender_role = role_repository.get_by_id(sender.role)
-            role = sender_role.name  
+        role = current_user.role
+
     return render_template(
         'users/index.html', 
         role=role, 
@@ -117,22 +110,22 @@ def getMeeting(meeting_id):
     action = request.args.get('action')
     registration_id = request.args.get('registration_id')
     
-    meeting = user_repository.get_meeting_by_id(meeting_id)
+    meeting = meeting_repository.get_meeting_by_id(meeting_id)
     if meeting is None:
         flash('Мероприятие не найдено', 'danger')
         return redirect(url_for('users.index'))
 
     if current_user.is_authenticated and action and registration_id and (current_user.role == 'Модератор' or current_user.role == 'Администратор'):
         if action == 'accept':
-            user_repository.set_status(registration_id, 'accepted')
+            meeting_repository.set_status(registration_id, 'accepted')
             flash('Заявка принята', 'success')
             
             if meeting.volunteers_amount > 0 and meeting.volunteers_count >= meeting.volunteers_amount:
-                user_repository.reject_all_pending(meeting_id)
+                meeting_repository.reject_all_pending(meeting_id)
                 flash('Лимит волонтеров достигнут. Оставшиеся заявки отклонены.', 'info')
                 
         elif action == 'reject':
-            user_repository.set_status(registration_id, 'rejected')
+            meeting_repository.set_status(registration_id, 'rejected')
             flash('Заявка отклонена', 'warning')
 
     elif action and registration_id and not current_user.is_authenticated:
@@ -144,16 +137,13 @@ def getMeeting(meeting_id):
     role = False
     already_registr = False
     if current_user.is_authenticated:
-        sender = user_repository.get_by_id(current_user.id)
-        if sender:
-            sender_role = role_repository.get_by_id(sender.role)
-            role = sender_role.name if sender_role else ''
-            already_registr = user_repository.get_reg_user_or_not(meeting_id, current_user.id)
+        role = current_user.role
+        already_registr = user_repository.get_reg_user_or_not(meeting_id, current_user.id)
 
     # Всегда показываем списки волонтеров для админов/модераторов
     if role in ['Администратор', 'Модератор']:
-        accepted_volunteers = user_repository.get_accepted_volunteers(meeting_id)
-        pending_volunteers = user_repository.get_pending_volunteers(meeting_id)
+        accepted_volunteers = meeting_repository.get_accepted_volunteers(meeting_id)
+        pending_volunteers = meeting_repository.get_pending_volunteers(meeting_id)
     else:
         accepted_volunteers = False
         pending_volunteers = False
@@ -215,12 +205,12 @@ def createMeeting():
             flash('Исправьте ошибки в форме', 'danger')
         else:
             try:
-                user_repository.create(**meeting)
+                meeting_repository.create(**meeting)
                 flash('Мероприятие успешно создано', 'success')
                 return redirect(url_for('users.index'))
             except connector.errors.DatabaseError:
                 flash('При сохранении данных возникла ошибка. Проверьте корректность введённых данных', 'danger')
-                connection = user_repository.db_connector.connect()
+                connection = meeting_repository.db_connector.connect()
                 connection.rollback()
 
     return render_template('users/createMeeting.html', meeting=meeting, errors=errors)
@@ -247,16 +237,16 @@ def editMeeting(meeting_id):
             flash('Исправьте ошибки в форме', 'danger')
         else:
             try:
-                user_repository.edit(meeting_id,**meeting)
+                meeting_repository.edit(meeting_id,**meeting)
                 flash('Мероприятие успешно отредактированно', 'success')
                 return redirect(url_for('users.index'))
             except connector.errors.DatabaseError:
                 flash('При сохранении данных возникла ошибка. Проверьте корректность введённых данных', 'danger')
-                connection = user_repository.db_connector.connect()
+                connection = meeting_repository.db_connector.connect()
                 connection.rollback()
     if request.method == 'GET':
-        meeting = user_repository.get_meeting_by_id(meeting_id)
-        
+        meeting = meeting_repository.get_meeting_by_id(meeting_id)
+
     return render_template('users/editMeeting.html', meeting=meeting, errors=errors)
 
 
@@ -265,7 +255,7 @@ def editMeeting(meeting_id):
 @check_rights('Администратор')
 def delete(meeting_id):
     try:
-        user_repository.delete(meeting_id)
+        meeting_repository.delete(meeting_id)
         flash('Запись успешно удалена', 'success')
     except Exception as e:
         flash(f'Ошибка при удалении: {e}', 'danger')
@@ -277,7 +267,7 @@ def registrate(meeting_id):
     try:
         contacts = request.form.get('contacts')
         if contacts:
-            user_repository.registrate(meeting_id, current_user.id, contacts)
+            meeting_repository.registrate(meeting_id, current_user.id, contacts)
             flash('Запись успешно создана', 'success')
     except Exception as e:
         flash(f'Ошибка при создании: {e}', 'danger')
