@@ -42,7 +42,8 @@
                                 data-bs-toggle="modal" 
                                 data-bs-target="#deleteModal"
                                 data-meeting-title="{{ meeting.title }}"
-                                data-meeting-id="{{ meeting.id }}">
+                                data-meeting-id="{{ meeting.id }}"
+                                onclick="event.stopPropagation()">
                             Удалить
                         </button>
                     {% endif %}
