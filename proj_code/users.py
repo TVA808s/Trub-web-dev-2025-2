@@ -254,6 +254,9 @@ def editMeeting(meeting_id):
                 flash('При сохранении данных возникла ошибка. Проверьте корректность введённых данных', 'danger')
                 connection = user_repository.db_connector.connect()
                 connection.rollback()
+                
+    if request.method == 'GET':
+        meeting = user_repository.get_meeting_by_id(meeting_id)
 
     return render_template('users/editMeeting.html', meeting=meeting, errors=errors)
 
