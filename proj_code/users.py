@@ -187,6 +187,7 @@ def createMeeting():
             if value is not None:
                 meeting[field] = cleaner.clean(value)
             else:
+                errors[field] = 'Введите значение'
                 meeting[field] = None
 
         meeting['organizer'] = current_user.id

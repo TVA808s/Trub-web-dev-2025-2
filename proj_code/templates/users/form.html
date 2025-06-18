@@ -18,7 +18,7 @@
 
     <div class="mb-3">
         <label for="title" class="form-label">Название</label>
-        <input type="text" name="title" id="title" class="form-control {% if errors.title %}is-invalid{% elif meeting.title %}is-valid{% endif %}" value="{{ meeting.title or ''}}" required>
+        <input type="text" name="title" id="title" class="form-control {% if errors.title %}is-invalid{% elif meeting.title %}is-valid{% endif %}" value="{{ meeting.title}}" required>
         {% if errors.title %}
             <div class="invalid-feedback">
                 {{errors.title}}
@@ -36,7 +36,7 @@
 
     <div class="mb-3">
         <label for="description" class="form-label">Описание</label>
-        <textarea name="description" id="description" class="form-control {% if errors.description %}is-invalid{% elif meeting.description %}is-valid{% endif %}" rows="5" required>{{ meeting.description or '' }}</textarea>         
+        <textarea name="description" id="description" class="form-control {% if errors.description %}is-invalid{% elif meeting.description %}is-valid{% endif %}" rows="5" required>{{ meeting.description}}</textarea>         
         {% if errors.description %}
             <div class="invalid-feedback">
                 {{errors.description}}
@@ -54,7 +54,7 @@
 
     <div class="mb-3">
         <label for="date" class="form-label">Дата проведения</label>
-        <input type="date" name="date" id="date" class="form-control {% if errors.date %}is-invalid{% elif meeting.date %}is-valid{% endif %}" value="{{ meeting.date or ''}}" required>
+        <input type="date" name="date" id="date" class="form-control {% if errors.date %}is-invalid{% elif meeting.date %}is-valid{% endif %}" value="{{ meeting.date}}" required>
          {% if errors.date %}
             <div class="invalid-feedback">
                 {{errors.date}}
@@ -72,7 +72,7 @@
 
     <div class="mb-3">
         <label for="place" class="form-label">Место</label>
-        <input type="text" name="place" id="place" class="form-control {% if errors.place %}is-invalid{% elif meeting.place %}is-valid{% endif %}" value="{{ meeting.place or ''}}" required>
+        <input type="text" name="place" id="place" class="form-control {% if errors.place %}is-invalid{% elif meeting.place %}is-valid{% endif %}" value="{{ meeting.place}}" required>
          {% if errors.place %}
             <div class="invalid-feedback">
                 {{errors.place}}
@@ -90,7 +90,7 @@
 
     <div class="mb-3">
         <label for="volunteers_amount" class="form-label">Количество волонтеров</label>
-        <input type="number" name="volunteers_amount" id="volunteers_amount" min="1" class="form-control {% if errors.volunteers_amount %}is-invalid{% elif meeting.volunteers_amount %}is-valid{% endif %}" value="{{ meeting.volunteers_amount or ''}}" required>
+        <input type="number" name="volunteers_amount" id="volunteers_amount" min="1" class="form-control {% if errors.volunteers_amount %}is-invalid{% elif meeting.volunteers_amount %}is-valid{% endif %}" value="{{ meeting.volunteers_amount}}" required>
          {% if errors.volunteers_amount %}
             <div class="invalid-feedback">
                 {{errors.volunteers_amount}}
