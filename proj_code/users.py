@@ -126,7 +126,6 @@ def getMeeting(meeting_id):
         elif action == 'reject':
             meeting_repository.set_status(registration_id, 'rejected')
             flash('Заявка отклонена', 'info')
-        return redirect(url_for('users.getMeeting', (meeting_id)))
     
     elif action and registration_id and not current_user.is_authenticated:
         flash('Для выполнения данного действия необходимо пройти процедуру аутентификации', 'danger')
