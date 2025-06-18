@@ -122,18 +122,18 @@ def getMeeting(meeting_id):
             
             if meeting.volunteers_amount > 0 and meeting.volunteers_count >= meeting.volunteers_amount:
                 meeting_repository.reject_all_pending(meeting_id)
-                flash('Лимит волонтеров достигнут. Оставшиеся заявки отклонены.', 'info')
-                
+                flash('Лимит волонтеров достигнут. Оставшиеся заявки отклонены.', 'info')         
         elif action == 'reject':
             meeting_repository.set_status(registration_id, 'rejected')
-            flash('Заявка отклонена', 'warning')
+            flash('Заявка отклонена', 'info')
 
     elif action and registration_id and not current_user.is_authenticated:
         flash('Для выполнения данного действия необходимо пройти процедуру аутентификации', 'danger')
         return redirect(url_for('users.login'))
     elif action and registration_id:
             flash('У вас недостаточно прав', 'danger')
-    
+            
+    meeting = meeting_repository.get_meeting_by_id(meeting_id)
     role = False
     already_registr = False
     if current_user.is_authenticated:
@@ -268,9 +268,8 @@ def registrate(meeting_id):
         contacts = request.form.get('contacts')
         if contacts:
             meeting_repository.registrate(meeting_id, current_user.id, contacts)
-            flash('Запись успешно создана', 'success')
-            return redirect(url_for('users.getMeeting', meeting_id=meeting_id)) 
+            flash('Запись успешно создана', 'success') 
     except Exception as e:
         flash(f'Ошибка при создании: {e}', 'danger')
-        return redirect(url_for('users.getMeeting', meeting_id=meeting_id)) 
+    return redirect(url_for('users.getMeeting', meeting_id=meeting_id)) 
 
