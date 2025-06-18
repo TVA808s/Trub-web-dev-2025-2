@@ -7,7 +7,7 @@ class UserRepository:
             cursor.execute("""
                 SELECT u.*, CONCAT_WS(' ', u.last_name, u.first_name, u.middle_name) as full_name, r.name as role_name
                 FROM users u 
-                LEFT JOIN roles r ON u.role = r.id
+                JOIN roles r ON u.role = r.id
                 WHERE u.id = %s;""", (user_id,))
             user = cursor.fetchone()
         return user
@@ -16,7 +16,7 @@ class UserRepository:
         with self.db_connector.connect().cursor(named_tuple=True) as cursor:
             cursor.execute("""SELECT u.*, CONCAT_WS(' ', u.last_name, u.first_name, u.middle_name) as full_name, r.name as role_name
                 FROM users u 
-                LEFT JOIN roles r ON u.role = r.id
+                JOIN roles r ON u.role = r.id
                 WHERE u.login = %s AND u.password = SHA2(%s, 256);""", (login, password))
             user = cursor.fetchone()
         return user
