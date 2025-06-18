@@ -183,12 +183,12 @@ def createMeeting():
     if request.method == 'POST':
         fields = ('title', 'description', 'date', 'place', 'volunteers_amount')
         for field in fields:
-            value = request.form.get(field)
-            if value is not None:
-                meeting[field] = cleaner.clean(value)
-            else:
+            value = request.form.get(field)        
+            if value is '' or value is None:
                 errors[field] = 'Введите значение'
-                meeting[field] = None
+                meeting[field] = None 
+            else:
+                meeting[field] = cleaner.clean(value)
 
         meeting['organizer'] = current_user.id
 
@@ -209,14 +209,19 @@ def createMeeting():
                 meeting['image'] = os.path.join('uploads', filename)
             else:
                 errors['image'] = 'Допустимые форматы: .png, .jpg, .jpeg, .gif'
-        if not errors:
+        
+        if errors:
+            flash('Исправьте ошибки в форме', 'danger')
+        else:
             try:
                 user_repository.create(**meeting)
                 flash('Мероприятие успешно создано', 'success')
                 return redirect(url_for('users.index'))
             except connector.errors.DatabaseError as e:
                 flash(f'Ошибка при создании {e}', 'danger')
-                db.connect().rollback()
+                connection = user_repository.db_connector.connect()
+                connection.rollback()
+                # db.connect().rollback()
 
     return render_template('users/createMeeting.html', meeting=meeting, errors=errors)
 
