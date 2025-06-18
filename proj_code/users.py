@@ -22,10 +22,6 @@ login_manager.login_view = 'users.login'
 login_manager.login_message = 'Авторизуйтесь для доступа к ресурсу.'
 login_manager.login_message_category = 'warning'
 
-UPLOAD_FOLDER = os.path.join(current_app.root_path, 'static/uploads')
-
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
-
 
 def check_rights(req_role):
     def decorator(func):
@@ -171,8 +167,9 @@ def getMeeting(meeting_id):
     )
 
 
+
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg'}
 
 @bp.route('/createMeeting', methods = ['POST', 'GET'])
 @login_required
@@ -180,6 +177,9 @@ def allowed_file(filename):
 def createMeeting():
     meeting = {}
     errors = {}
+
+    UPLOAD_FOLDER = os.path.join(current_app.root_path, 'static/uploads')
+
     if request.method == 'POST':
         fields = ('title', 'description', 'date', 'place', 'volunteers_amount')
         for field in fields:
