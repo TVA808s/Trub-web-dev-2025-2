@@ -39,6 +39,8 @@
                     {% if role == 'Администратор' %}
                         <button type="button" 
                                 class="btn btn-danger" 
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteModal"
                                 data-meeting-title="{{ meeting.title }}"
                                 data-meeting-id="{{ meeting.id }}">
                             Удалить
@@ -102,6 +104,7 @@
     </div>
 {% endblock %}
 {% block scripts %}
+{{ super() }}
 <script src="{{ url_for('static', filename='meeting_delete_modal.js') }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
