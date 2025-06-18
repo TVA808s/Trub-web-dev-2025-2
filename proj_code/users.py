@@ -171,7 +171,7 @@ def allowed_file(filename):
 def createMeeting():
     meeting = {}
     errors = {}
-
+    # полный путь для сохранения фото
     UPLOAD_FOLDER = os.path.join(current_app.root_path, 'static/uploads')
 
     if request.method == 'POST':
@@ -199,7 +199,7 @@ def createMeeting():
                 save_path = os.path.join(UPLOAD_FOLDER, filename)
                 image.save(save_path)
                 
-                # URL для сохранения в БД (относительный путь)
+                # относительный путь для бд
                 meeting['image'] = os.path.join('uploads', filename)
             else:
                 errors['image'] = 'Допустимые форматы: .png, .jpg, .jpeg, .gif'

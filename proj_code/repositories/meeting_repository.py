@@ -103,7 +103,7 @@ class MeetingRepository:
                     CONCAT_WS(' ', u.last_name, u.first_name, u.middle_name) as full_name,
                     r.contacts,
                     r.date,
-                    r.id AS registration_id  # Важно: используем id регистрации
+                    r.id AS registration_id 
                 FROM registration_table r
                 JOIN users u ON r.volunteer = u.id
                 WHERE r.meeting = %s
