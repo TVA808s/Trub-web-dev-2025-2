@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 
-{% from 'users/form.html' import user_form %}
+{% from 'users/form.html' import meeting_form %}
 
 {% block content %}
 <h1 class="mb-3"> Редактирование пользователя </h1>
-{{ user_form(roles, 'edit', password_error, login_error, user_data) }}
+{{ user_form('edit', meeting, errors) }}
 {% endblock %}
+

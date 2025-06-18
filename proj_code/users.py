@@ -3,13 +3,15 @@ from flask_login import LoginManager, UserMixin, current_user, login_user, logou
 import mysql.connector as connector
 from proj_code.validators.password_validator import password_validator
 from proj_code.validators.login_validator import login_validator
-from werkzeug.security import check_password_hash, generate_password_hash
 from functools import wraps
 from proj_code.repositories.user_repository import UserRepository
 from proj_code.repositories.role_repository import RoleRepository
 from proj_code.db import db
 from math import ceil
-
+from bleach.sanitizer import Cleaner
+import os
+from werkzeug.utils import secure_filename
+cleaner = Cleaner()
 user_repository = UserRepository(db)
 role_repository = RoleRepository(db)
 
@@ -19,7 +21,6 @@ login_manager = LoginManager()
 login_manager.login_view = 'users.login'
 login_manager.login_message = 'Авторизуйтесь для доступа к ресурсу.'
 login_manager.login_message_category = 'warning'
-
 
 def check_rights(req_role):
     def decorator(func):
@@ -44,7 +45,6 @@ def check_rights(req_role):
         return decorated_function
     return decorator
 
-
 class User(UserMixin):
     def __init__(self, user_id, login, role, full_name):
         self.id = user_id
@@ -59,35 +59,28 @@ def load_user(user_id):
         return User(user.id, user.login, user.role, user.full_name)
     return None
 
-
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('users.index'))
-    
     if request.method == 'POST':
         login = request.form.get('login')
         password = request.form.get('password')
         remember_me = request.form.get('remember_me') == 'on'
         
         user = user_repository.get_by_login_and_password(login, password)
-        
         if user is not None:
             flash('Авторизация прошла успешно', 'success')
             login_user(User(user.id, user.login, user.role, user.full_name), remember=remember_me)
             next_url = request.args.get('next', url_for('users.index'))
             return redirect(next_url)
-        
         flash('Невозможно аутентифицироваться с указанными логином и паролем', 'danger')
-
     return render_template('users/login.html', title='Войти')
-
 
 @bp.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('users.index'))
-
 
 @bp.errorhandler(connector.errors.DatabaseError)
 def handler():
@@ -122,33 +115,30 @@ def getMeeting(meeting_id):
     action = request.args.get('action')
     registration_id = request.args.get('registration_id')
     
-    # Обработка действий с заявками
+    meeting = user_repository.get_meeting_by_id(meeting_id)
+    if meeting is None:
+        flash('Мероприятие не найдено', 'danger')
+        return redirect(url_for('users.index'))
+
     if current_user.is_authenticated and action and registration_id and (current_user.role == 'Модератор' or current_user.role == 'Администратор'):
         if action == 'accept':
             user_repository.set_status(registration_id, 'accepted')
             flash('Заявка принята', 'success')
             
-            # После принятия заявки проверяем лимит
-            meeting = user_repository.get_meeting_by_id(meeting_id)
-            if meeting and meeting.volunteers_amount > 0 and meeting.volunteers_count >= meeting.volunteers_amount:
+            if meeting.volunteers_amount > 0 and meeting.volunteers_count >= meeting.volunteers_amount:
                 user_repository.reject_all_pending(meeting_id)
                 flash('Лимит волонтеров достигнут. Оставшиеся заявки отклонены.', 'info')
                 
         elif action == 'reject':
             user_repository.set_status(registration_id, 'rejected')
             flash('Заявка отклонена', 'warning')
+
     elif action and registration_id and not current_user.is_authenticated:
         flash('Для выполнения данного действия необходимо пройти процедуру аутентификации', 'danger')
         return redirect(url_for('users.login'))
     elif action and registration_id:
             flash('У вас недостаточно прав', 'danger')
         
-    
-    meeting = user_repository.get_meeting_by_id(meeting_id)
-    if meeting is None:
-        flash('Мероприятие не найдено', 'danger')
-        return redirect(url_for('users.index'))
-    
     role = False
     already_registr = False
     if current_user.is_authenticated:
@@ -175,59 +165,49 @@ def getMeeting(meeting_id):
         already_registr=already_registr
     )
 
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'avif'}
 
-@bp.route('/createUser', methods = ['POST', 'GET'])
+@bp.route('/createMeeting', methods = ['POST', 'GET'])
 @login_required
 @check_rights('Администратор')
-def createUser():
-    user_data = {}
+def createMeeting():
+    meeting = {}
+    errors = {}
     if request.method == 'POST':
-        fields = ('username', 'password', 'first_name', 'middle_name', 'last_name', 'role_id')
-        user_data = { field: request.form.get(field) or None for field in fields }
-        
-        password_error = password_validator(user_data['password']) or None
-        login_error = login_validator(user_data['username']) or None
-        
-        
-        if password_error or login_error:
-            flash([password_error or '', login_error or ''], 'danger')
-            return render_template('users/createUser.html', password_error=password_error, login_error=login_error, user_data=user_data, roles=role_repository.all())
-        
+        fields = ('title', 'description', 'date', 'place', 'amount')
+        meeting = { field: cleaner.clean(request.form.get(field)) or None for field in fields }
+        meeting['image'] = ''
+        image = request.files['image']
+        meeting['organizer'] = current_user.id
+
+        if image.filename != '':
+            if image and allowed_file(image.filename):
+                filename = secure_filename(image.filename)
+                image.save(os.path.join('/static/uploads', filename))
+                image_path = os.path.join('/static/uploads', filename)
+                image.save(image_path)
+                meeting['image'] = image_path
+            else:
+                errors['image'] = 'Допустимые форматы: .png, .jpg, .jpeg'
+        else:
+            errors['image'] = 'Выберите изображение'
+
         try:
-            user_repository.create(**user_data)
-            flash('Учетная запись успешно создана', 'success')
+            user_repository.create(**meeting)
+            flash('Мероприятие успешно создано', 'success')
             return redirect(url_for('users.index'))
         except connector.errors.DatabaseError:
-            flash('Произошла ошибка при создании записи. Проверьте, что все необходимые поля заполнены', 'danger')
+            flash('Произошла ошибка при создании мероприятия. Проверьте, что все необходимые поля заполнены', 'danger')
             db.connect().rollback()
-    return render_template('users/createUser.html', password_error=None, login_error=None, user_data=user_data, roles=role_repository.all())
 
-@bp.route('/<int:meeting_id>/delete', methods = ['POST'])
+    return render_template('users/createMeeting.html', meeting=meeting, errors=errors)
+
+
+@bp.route('/<int:meeting_id>/editMeeting', methods = ['POST', 'GET'])
 @login_required
 @check_rights('Администратор')
-def delete(meeting_id):
-    try:
-        user_repository.delete(meeting_id)
-        flash('Запись успешно удалена', 'success')
-    except Exception as e:
-        flash(f'Ошибка при удалении: {e}', 'danger')
-    return redirect(url_for('users.index'))
-
-@bp.route('/<int:meeting_id>/registrate', methods=['POST'])
-@login_required
-def registrate(meeting_id):
-    try:
-        contacts = request.form.get('contacts')
-        if contacts:
-            user_repository.registrate(meeting_id, current_user.id, contacts)
-            flash('Запись успешно создана', 'success')
-    except Exception as e:
-        flash(f'Ошибка при создании: {e}', 'danger')
-    return redirect(url_for('users.getMeeting', meeting_id=meeting_id))  
-
-@bp.route('/<int:user_id>/updateName', methods = ['POST', 'GET'])
-@login_required
-def updateName(user_id):
+def editMeeting(meeting_id):
     sender = user_repository.get_by_id(current_user.id)
     sender_role = role_repository.get_by_id(sender.role_id)
     if current_user.id != user_id and sender_role.name != 'Администратор':
@@ -260,46 +240,26 @@ def updateName(user_id):
                 user = user_data
     return render_template('users/updateName.html', password_error=None, login_error=None, user_data=user, roles=roles)
 
-@bp.route('/<int:user_id>/updatePassword', methods = ['POST', 'GET'])
+
+@bp.route('/<int:meeting_id>/delete', methods = ['POST'])
 @login_required
-def updatePassword(user_id):
-    sender = user_repository.get_by_id(current_user.id)
-    sender_role = role_repository.get_by_id(sender.role_id)
-    if current_user.id != user_id and sender_role.name != 'Администратор':
-        flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
-        return redirect(url_for('users.index'))
-    
-    user = user_repository.get_by_id(user_id)
-    if user is None:
-        flash('Пользователя нет в базе данных!', 'danger')
-        return redirect(url_for('users.index'))
-    
-    old_password_validation = None
-    passwords_not_matching = None
-    password_error = None
-    user_data = {}
-    if request.method == 'POST':
-        fields = ('old_password', 'new_password', 'new_password_r')
-        user_data = { field: request.form.get(field) or None for field in fields }
-        
-        check = user_repository.validate_password(user_id, user_data['old_password'])
-        
-        if check is None:
-            old_password_validation = "Неверный старый пароль!"
-        
-        if user_data['new_password'] != user_data['new_password_r']:
-            passwords_not_matching = "Пароли не совпадают!"
+@check_rights('Администратор')
+def delete(meeting_id):
+    try:
+        user_repository.delete(meeting_id)
+        flash('Запись успешно удалена', 'success')
+    except Exception as e:
+        flash(f'Ошибка при удалении: {e}', 'danger')
+    return redirect(url_for('users.index'))
 
-        password_error = password_validator(user_data['new_password'])
-
-        if not password_error and not passwords_not_matching and not old_password_validation:
-            try:
-                user_repository.change_password(user_id, user_data["new_password"])
-                flash('Пароль успешно изменен', 'success')
-                return redirect(url_for('users.index'))
-            except connector.errors.DatabaseError:
-                flash('Произошла ошибка при изменении пароля.', 'danger')
-                db.connect().rollback()
-
-
-    return render_template('users/updatePassword.html', password_error=password_error, old_password_validation=old_password_validation, passwords_not_matching=passwords_not_matching, user_data=user_data)
+@bp.route('/<int:meeting_id>/registrate', methods=['POST'])
+@login_required
+def registrate(meeting_id):
+    try:
+        contacts = request.form.get('contacts')
+        if contacts:
+            user_repository.registrate(meeting_id, current_user.id, contacts)
+            flash('Запись успешно создана', 'success')
+    except Exception as e:
+        flash(f'Ошибка при создании: {e}', 'danger')
+    return redirect(url_for('users.getMeeting', meeting_id=meeting_id))  

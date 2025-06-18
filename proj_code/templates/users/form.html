@@ -1,17 +1,34 @@
-{% macro user_form(roles, action, password_error, login_error, user_data={}) %}
-<form method='post' novalidate>
+{% macro meeting_form(action, meeting={}, errors={}) %}
+
+<form method='post' novalidate enctype="multipart/form-data">
+
     {% if action == 'new' %}
+    <div class="mb-3">
+        <label for="image" class="form-label">Изображение</label>
+        <input type="file" name="image" id="image" class="form-control {% if errors.image %}is-invalid{% endif %}" accept="image/*" required>
+        
+        {% if errors.image %}
+            <div class="invalid-feedback">
+                {{ errors.image }}
+            </div>
+        {% endif %}
+        <div class="form-text">Загрузите изображение для мероприятия</div>
+    </div>
+    <div class="mb-3" hidden>
+        <input type="text" name="organizer" id="organizer" class="form-control" value="{{current_user.id}}" required>
+    </div>
+    {% endif %}
 
     <div class="mb-3">
-        <label for="login" class="form-label">Логин</label>
-        <input type="text" name="username" id="login" class="form-control {% if login_error or not user_data.username %}is-invalid{% else %}is-valid{% endif %}" value="{{ user_data.username or ''}}">
-        {% if login_error%}
+        <label for="title" class="form-label">Название</label>
+        <input type="text" name="title" id="title" class="form-control {% if errors.title %}is-invalid{% elif meeting.title %}is-valid{% endif %}" value="{{ meeting.title or ''}}" required>
+        {% if errors.title %}
             <div class="invalid-feedback">
-                {{login_error}}
+                {{errors.title}}
             </div>
-        {% elif not user_data.username %}
+        {% elif not meeting.title %}
             <div class="invalid-feedback">
-                нужно ввести логин
+                Введите название мероприятия
             </div>
         {% else %}
             <div class="valid-feedback">
@@ -19,30 +36,17 @@
             </div>
         {% endif %}
     </div>
+
     <div class="mb-3">
-        <label for="password" class="form-label">Пароль</label>
-        <input type="password" name="password" id="password" class="form-control {% if password_error or not user_data.password %}is-invalid{% else %}is-valid{% endif %}" value="{{ user_data.password or ''}}">
-        {% if password_error %}
+        <label for="description" class="form-label">Описание</label>
+        <textarea name="description" id="description" class="form-control {% if errors.description %}is-invalid{% elif meeting.description %}is-valid{% endif %}" rows="5" required>{{ meeting.description or '' }}</textarea>         
+        {% if errors.description %}
             <div class="invalid-feedback">
-                {{password_error}}
+                {{errors.description}}
             </div>
-        {% elif not user_data.password %}
+        {% elif not meeting.description %}
             <div class="invalid-feedback">
-                нужно ввести пароль
-            </div>
-        {% else %}
-            <div class="valid-feedback">
-               супер!
-            </div>
-        {% endif %}
-    </div>
-    {% endif %}
-    <div class="mb-3">
-        <label for="first_name" class="form-label">Имя</label>
-        <input type="text" name="first_name" id="first_name" class="form-control {% if not user_data.first_name %}is-invalid{% else %}is-valid{% endif %}" value="{{ user_data.first_name or ''}}">
-        {% if not user_data.first_name %}
-            <div class="invalid-feedback">
-                Заполните Ваше имя!
+                Введите описание мероприятия
             </div>
         {% else %}
             <div class="valid-feedback">
@@ -50,21 +54,17 @@
             </div>
         {% endif %}
     </div>
+
     <div class="mb-3">
-        <label for="last_name" class="form-label">Фамилия (необязательно)</label>
-        <input type="text" name="last_name" id="last_name" class="form-control" value="{{ user_data.last_name or ''}}">
-         {% if 1 %}
-            <div class="valid-feedback">
-                супер!
-            </div>
-        {% endif %}
-    </div>
-    <div class="mb-3">
-        <label for="middle_name" class="form-label">Отчество</label>
-        <input type="text" name="middle_name" id="middle_name" class="form-control {% if not user_data.middle_name %}is-invalid{% else %}is-valid{% endif %}" value="{{ user_data.middle_name or ''}}">
-        {% if not user_data.middle_name %}
+        <label for="date" class="form-label">Дата</label>
+        <input type="text" name="date" id="date" class="form-control {% if errors.date %}is-invalid{% elif meeting.date %}is-valid{% endif %}" value="{{ meeting.date or ''}}" required>
+         {% if errors.date %}
             <div class="invalid-feedback">
-                Заполните Ваше отчество!
+                {{errors.date}}
+            </div>
+        {% elif not meeting.date %}
+            <div class="invalid-feedback">
+                Введите дату мероприятия
             </div>
         {% else %}
             <div class="valid-feedback">
@@ -72,19 +72,44 @@
             </div>
         {% endif %}
     </div>
-    {% if roles %}
+
     <div class="mb-3">
-        <label for="role_id" class="form-label">Роль</label>
-        <select name="role_id" id="role_id" class="form-select">
-            {% for role in roles %}
-                <option value="{{ role.id }}"
-                    {% if user_data.role_id == role.id|string %} selected {% endif %}>
-                    {{ role.name }}
-                </option>
-            {% endfor %}
-        </select>
+        <label for="place" class="form-label">Место</label>
+        <input type="text" name="place" id="place" class="form-control {% if errors.place %}is-invalid{% elif meeting.place %}is-valid{% endif %}" value="{{ meeting.place or ''}}" required>
+         {% if errors.place %}
+            <div class="invalid-feedback">
+                {{errors.place}}
+            </div>
+        {% elif not meeting.place %}
+            <div class="invalid-feedback">
+                Введите место проведения мероприятия
+            </div>
+        {% else %}
+            <div class="valid-feedback">
+                супер!
+            </div>
+        {% endif %}
     </div>
-    {% endif %}
+
+    <div class="mb-3">
+        <label for="amount" class="form-label">Количество волонтеров</label>
+        <input type="text" name="amount" id="amount" class="form-control {% if errors.amount %}is-invalid{% elif meeting.amount %}is-valid{% endif %}" value="{{ meeting.amount or ''}}" required>
+         {% if errors.amount %}
+            <div class="invalid-feedback">
+                {{errors.amount}}
+            </div>
+        {% elif not meeting.amount %}
+            <div class="invalid-feedback">
+                Введите требуемое количество волонтеров
+            </div>
+        {% else %}
+            <div class="valid-feedback">
+                супер!
+            </div>
+        {% endif %}
+    </div>
+
     <button type="submit" class="btn btn-primary"> {% if action=='new' %} Создать {% else %} Сохранить {% endif %} </button>
 </form>
+
 {% endmacro %}

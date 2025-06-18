@@ -134,21 +134,14 @@ class UserRepository:
             users = cursor.fetchall()
         return users
     
-    def create(self, username, password, first_name, middle_name, last_name, role_id):
+    def create(self, title, description, date, place, amount, image, organizer):
         connection = self.db_connector.connect()
         with connection.cursor(named_tuple=True) as cursor:
-            if last_name == None:
-                query = (
-                "INSERT INTO users (username, password, first_name, middle_name, role_id) VALUES"
-                "(%s, SHA2(%s,256), %s, %s, %s)"
-                )
-            else:
-                query = (
-                    "INSERT INTO users (username, password, first_name, middle_name, last_name, role_id) VALUES"
-                    "(%s, SHA2(%s,256), %s, %s, %s, %s)"
-                )
-            user_data = (username, password, first_name, middle_name, last_name, role_id)
-            cursor.execute(query, user_data)
+            query = (
+            "INSERT INTO meetings (title, description, date, place, amount, image, organizer) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+            )
+            meeting = (title, description, date, place, amount, image, organizer)
+            cursor.execute(query, meeting)
             connection.commit()
             
     def update(self, user_id, first_name, middle_name, last_name, role_id):
