@@ -30,11 +30,11 @@ def check_rights(req_role):
                 flash('Для выполнения данного действия необходимо пройти процедуру аутентификации', 'danger')
                 return redirect(url_for('users.login'))
             
-            if req_role == 'Администратор' and current_user.role != 'Администратор':
+            if req_role == 'Администратор' and current_user.role_name != 'Администратор':
                 flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
                 return redirect(url_for('users.index'))
 
-            if req_role == 'Модератор' and current_user.role not in ['Модератор', 'Администратор']:                
+            if req_role == 'Модератор' and current_user.role_name not in ['Модератор', 'Администратор']:                
                 flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
                 return redirect(url_for('users.index'))
             
@@ -43,17 +43,17 @@ def check_rights(req_role):
     return decorator
 
 class User(UserMixin):
-    def __init__(self, user_id, login, role, full_name):
+    def __init__(self, user_id, login, role_name, full_name):
         self.id = user_id
         self.login = login
-        self.role = role
+        self.role_name = role_name
         self.full_name = full_name
 
 @login_manager.user_loader
 def load_user(user_id):
     user = user_repository.get_by_id(user_id)
     if user is not None:
-        return User(user.id, user.login, user.role, user.full_name)
+        return User(user.id, user.login, user.role_name, user.full_name)
     return None
 
 @bp.route('/login', methods=['GET', 'POST'])
@@ -68,7 +68,7 @@ def login():
         user = user_repository.get_by_login_and_password(login, password)
         if user is not None:
             flash('Авторизация прошла успешно', 'success')
-            login_user(User(user.id, user.login, user.role, user.full_name), remember=remember_me)
+            login_user(User(user.id, user.login, user.role_name, user.full_name), remember=remember_me)
             next_url = request.args.get('next', url_for('users.index'))
             return redirect(next_url)
         flash('Невозможно аутентифицироваться с указанными логином и паролем', 'danger')
@@ -95,7 +95,7 @@ def index():
     
     role = False
     if current_user.is_authenticated:
-        role = current_user.role
+        role = current_user.role_name
 
     return render_template(
         'users/index.html', 
@@ -115,7 +115,7 @@ def getMeeting(meeting_id):
         flash('Мероприятие не найдено', 'danger')
         return redirect(url_for('users.index'))
 
-    if current_user.is_authenticated and action and registration_id and (current_user.role == 'Модератор' or current_user.role == 'Администратор'):
+    if current_user.is_authenticated and action and registration_id and (current_user.role_name == 'Модератор' or current_user.role_name == 'Администратор'):
         if action == 'accept':
             meeting_repository.set_status(registration_id, 'accepted')
             flash('Заявка принята', 'success')
@@ -137,7 +137,7 @@ def getMeeting(meeting_id):
     role = False
     already_registr = False
     if current_user.is_authenticated:
-        role = current_user.role
+        role = current_user.role_name
         already_registr = user_repository.get_reg_user_or_not(meeting_id, current_user.id)
 
     # Всегда показываем списки волонтеров для админов/модераторов
