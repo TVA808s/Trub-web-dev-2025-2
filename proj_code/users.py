@@ -269,6 +269,8 @@ def registrate(meeting_id):
         if contacts:
             meeting_repository.registrate(meeting_id, current_user.id, contacts)
             flash('Запись успешно создана', 'success')
+            return redirect(url_for('users.getMeeting', meeting_id=meeting_id)) 
     except Exception as e:
         flash(f'Ошибка при создании: {e}', 'danger')
-    return redirect(url_for('users.getMeeting', meeting_id=meeting_id))  
+        return redirect(url_for('users.getMeeting', meeting_id=meeting_id)) 
+
