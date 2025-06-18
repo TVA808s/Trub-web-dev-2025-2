@@ -1,14 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     const modalElement = document.getElementById('createModal');
     
-    if (!modalElement) {
-        return 1;
-    }
-    
-    // Инициализируем модальное окно через Bootstrap
     const registrationModal = new bootstrap.Modal(modalElement);
     
-    // Обработчик для кнопки регистрации
+    // Обработчик для кнопок регистрации
     document.querySelectorAll('[data-bs-target="#createModal"]').forEach(button => {
         button.addEventListener('click', function() {
             const meetingId = this.getAttribute('data-meeting-id');

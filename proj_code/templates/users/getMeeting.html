@@ -70,7 +70,7 @@
         {% if role and not already_registr and meeting.volunteers_count < meeting.volunteers_amount %}
             <button type="button" 
                     class="btn btn-primary" 
-                    data-bs-toggle="modal" 
+                    data-bs-toggle="modal"
                     data-bs-target="#createModal"
                     data-meeting-title="{{ meeting.title }}"
                     data-meeting-id="{{ meeting.id }}">
@@ -173,6 +173,7 @@
 </div>
 {% endblock %}
 {% block scripts %}
+{{ super() }}
 <script src="{{ url_for('static', filename='registration_modal.js') }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
