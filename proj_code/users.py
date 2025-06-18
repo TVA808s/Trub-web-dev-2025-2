@@ -105,42 +105,47 @@ def index():
         total_pages=total_pages
     )
 
+
+@bp.route('/<int:meeting_id>/registration', methods=['POST'])
+@login_required
+def registration(meeting_id):
+    action = request.form.get('action')
+    registration_id = request.form.get('registration_id')
+    
+    if current_user.role_name not in ['Модератор', 'Администратор']:
+        flash('У вас недостаточно прав', 'danger')
+        return redirect(url_for('users.getMeeting', meeting_id=meeting_id))
+    
+    if action == 'accept':
+        meeting_repository.set_status(registration_id, 'accepted')
+        flash('Заявка принята', 'success')
+        
+        meeting = meeting_repository.get_meeting_by_id(meeting_id)
+        if meeting.volunteers_count >= meeting.volunteers_amount:
+            meeting_repository.reject_all_pending(meeting_id)
+            flash('Лимит волонтеров достигнут. Оставшиеся заявки отклонены.', 'info')
+            
+    elif action == 'reject':
+        meeting_repository.set_status(registration_id, 'rejected')
+        flash('Заявка отклонена', 'info')
+    
+    # Важно: перенаправляем после POST
+    return redirect(url_for('users.getMeeting', meeting_id=meeting_id))
+
+
 @bp.route('/<int:meeting_id>')
 def getMeeting(meeting_id):
-    action = request.args.get('action')
-    registration_id = request.args.get('registration_id')
-    
     meeting = meeting_repository.get_meeting_by_id(meeting_id)
     if meeting is None:
         flash('Мероприятие не найдено', 'danger')
         return redirect(url_for('users.index'))
 
-    if current_user.is_authenticated and action and registration_id and (current_user.role_name == 'Модератор' or current_user.role_name == 'Администратор'):
-        if action == 'accept':
-            meeting_repository.set_status(registration_id, 'accepted')
-            flash('Заявка принята', 'success')
-            
-            if meeting.volunteers_amount > 0 and meeting.volunteers_count >= meeting.volunteers_amount:
-                meeting_repository.reject_all_pending(meeting_id)
-                flash('Лимит волонтеров достигнут. Оставшиеся заявки отклонены.', 'info')         
-        elif action == 'reject':
-            meeting_repository.set_status(registration_id, 'rejected')
-            flash('Заявка отклонена', 'info')
-    
-    elif action and registration_id and not current_user.is_authenticated:
-        flash('Для выполнения данного действия необходимо пройти процедуру аутентификации', 'danger')
-        return redirect(url_for('users.login'))
-    elif action and registration_id:
-            flash('У вас недостаточно прав', 'danger')
-
-    meeting = meeting_repository.get_meeting_by_id(meeting_id)
     role = False
     already_registr = False
     if current_user.is_authenticated:
         role = current_user.role_name
         already_registr = user_repository.get_reg_user_or_not(meeting_id, current_user.id)
 
-    # Всегда показываем списки волонтеров для админов/модераторов
     if role in ['Администратор', 'Модератор']:
         accepted_volunteers = meeting_repository.get_accepted_volunteers(meeting_id)
         pending_volunteers = meeting_repository.get_pending_volunteers(meeting_id)
