@@ -2,8 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const modalElement = document.getElementById('createModal');
     
     if (!modalElement) {
-        console.error('Registration modal element not found');
-        return;
+        return 1;
     }
     
     // Инициализируем модальное окно через Bootstrap

@@ -3,8 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const modalElement = document.getElementById('deleteModal');
     
     if (!modalElement) {
-        console.error('Delete modal element not found');
-        return;
+        return 1;
     }
     
     // Инициализируем модальное окно через Bootstrap
