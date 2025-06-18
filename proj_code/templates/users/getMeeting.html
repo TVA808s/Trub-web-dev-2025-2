@@ -141,7 +141,8 @@
                         <input type="hidden" name="action" value="accept">
                         <input type="hidden" name="registration_id" value="{{ pv.registration_id }}">
                         <button type="submit" class="btn btn-success btn-sm">Принять</button>
-                    
+                    </form>
+                    <form method="post" action="{{ url_for('users.registration', meeting_id=meeting.id) }}" style="display: inline;">
                         <input type="hidden" name="action" value="reject">
                         <input type="hidden" name="registration_id" value="{{ pv.registration_id }}">
                         <button type="submit" class="btn btn-danger btn-sm">Отклонить</button>

@@ -111,7 +111,7 @@ def index():
 def registration(meeting_id):
     action = request.form.get('action')
     registration_id = request.form.get('registration_id')
-    
+
     if current_user.role_name not in ['Модератор', 'Администратор']:
         flash('У вас недостаточно прав', 'danger')
         return redirect(url_for('users.getMeeting', meeting_id=meeting_id))
@@ -119,7 +119,6 @@ def registration(meeting_id):
     if action == 'accept':
         meeting_repository.set_status(registration_id, 'accepted')
         flash('Заявка принята', 'success')
-        
         meeting = meeting_repository.get_meeting_by_id(meeting_id)
         if meeting.volunteers_count >= meeting.volunteers_amount:
             meeting_repository.reject_all_pending(meeting_id)
@@ -128,8 +127,7 @@ def registration(meeting_id):
     elif action == 'reject':
         meeting_repository.set_status(registration_id, 'rejected')
         flash('Заявка отклонена', 'info')
-    
-    # Важно: перенаправляем после POST
+
     return redirect(url_for('users.getMeeting', meeting_id=meeting_id))
 
 
