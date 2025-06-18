@@ -22,15 +22,15 @@
                             style="max-height: 400px; object-fit: cover;">
                     </div>  
                     <div class="card-body markdown-content">
-                        {{ meeting.description }}
+                        {{ meeting.description|markdown|safe }}
                     </div>
-                    <div class="card-body markdown-content">
+                    <div class="card-body">
                         {{ meeting.date }}
                     </div>
-                    <div class="card-body markdown-content">
+                    <div class="card-body">
                         {{ meeting.place }}
                     </div>
-                    <div class="card-body markdown-content">
+                    <div class="card-body">
                         {{ meeting.organizer_name }}
                     </div>
                 </div>
