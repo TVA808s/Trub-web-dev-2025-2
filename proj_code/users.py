@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, redirect, render_template, request, url_for, current_app
 from flask_login import LoginManager, UserMixin, current_user, login_user, logout_user, login_required
 import mysql.connector as connector
 from proj_code.validators.password_validator import password_validator
@@ -22,7 +22,8 @@ login_manager.login_view = 'users.login'
 login_manager.login_message = 'Авторизуйтесь для доступа к ресурсу.'
 login_manager.login_message_category = 'warning'
 
-UPLOAD_FOLDER = 'static/uploads'
+UPLOAD_FOLDER = os.path.join(current_app.root_path, 'static/uploads')
+
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 
@@ -187,7 +188,7 @@ def createMeeting():
                 meeting[field] = cleaner.clean(value)
             else:
                 meeting[field] = None
-                
+
         meeting['organizer'] = current_user.id
 
         if 'image' not in request.files:
@@ -198,6 +199,7 @@ def createMeeting():
             if image.filename == '':
                 errors['image'] = 'Выберите изображение'
             elif image and allowed_file(image.filename):
+                os.makedirs(UPLOAD_FOLDER, exist_ok=True)
                 filename = secure_filename(image.filename)
                 save_path = os.path.join(UPLOAD_FOLDER, filename)
                 image.save(save_path)
