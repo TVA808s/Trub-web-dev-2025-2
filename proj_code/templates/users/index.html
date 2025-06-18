@@ -33,7 +33,7 @@
                 <td>
                     <a class="btn btn-primary" href="{{url_for('users.getMeeting', meeting_id = meeting.id)}}">Просмотр</a>
                     {% if role and role != 'Пользователь' %}
-                        <a class="btn btn-primary">Редактирование</a>
+                        <a class="btn btn-primary" href="{{url_for('users.editMeeting', meeting_id=meeting.id)}}">Редактирование</a>
                     {% endif %}
                     
                     {% if role == 'Администратор' %}

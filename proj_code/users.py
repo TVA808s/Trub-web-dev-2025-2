@@ -230,37 +230,32 @@ def createMeeting():
 @login_required
 @check_rights('Администратор')
 def editMeeting(meeting_id):
-    sender = user_repository.get_by_id(current_user.id)
-    sender_role = role_repository.get_by_id(sender.role_id)
-    if current_user.id != user_id and sender_role.name != 'Администратор':
-        flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
-        return redirect(url_for('users.index'))
-    
-    roles = None
-    user = user_repository.get_by_id(user_id)
-    if user is None:
-        flash('Пользователя нет в базе данных!', 'danger')
-        return redirect(url_for('users.index'))
+    meeting = {}
+    errors = {}
+
     if request.method == 'POST':
-        if sender_role.name == 'Администратор':
-            fields = ('first_name', 'middle_name', 'last_name', 'role_id')
-            roles = role_repository.all()
-        else:
-            fields = ('first_name', 'middle_name', 'last_name')
-        user_data = { field: request.form.get(field) or None for field in fields }
-        if user_data['first_name'] == None or user_data['middle_name'] == None:
-            flash('Имя и Отчество должны быть введены','danger')
-            user = user_data
+        fields = ('title', 'description', 'date', 'place', 'volunteers_amount')
+        for field in fields:
+            value = request.form.get(field)        
+            if value is '' or value is None:
+                errors[field] = 'Введите значение'
+                meeting[field] = '' 
+            else:
+                meeting[field] = cleaner.clean(value)
+
+        if errors:
+            flash('Исправьте ошибки в форме', 'danger')
         else:
             try:
-                user_repository.update(user_id, **user_data)
-                flash('Учетная запись успешно изменена', 'success')
+                user_repository.edit(meeting_id,**meeting)
+                flash('Мероприятие успешно отредактированно', 'success')
                 return redirect(url_for('users.index'))
             except connector.errors.DatabaseError:
-                flash('Произошла ошибка при изменении записи.', 'danger')
-                db.connect().rollback()
-                user = user_data
-    return render_template('users/updateName.html', password_error=None, login_error=None, user_data=user, roles=roles)
+                flash('При сохранении данных возникла ошибка. Проверьте корректность введённых данных', 'danger')
+                connection = user_repository.db_connector.connect()
+                connection.rollback()
+
+    return render_template('users/editMeeting.html', meeting=meeting, errors=errors)
 
 
 @bp.route('/<int:meeting_id>/delete', methods = ['POST'])
