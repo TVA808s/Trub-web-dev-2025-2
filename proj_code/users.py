@@ -217,11 +217,10 @@ def createMeeting():
                 user_repository.create(**meeting)
                 flash('Мероприятие успешно создано', 'success')
                 return redirect(url_for('users.index'))
-            except connector.errors.DatabaseError as e:
-                flash(f'Ошибка при создании {e}', 'danger')
+            except connector.errors.DatabaseError:
+                flash('При сохранении данных возникла ошибка. Проверьте корректность введённых данных', 'danger')
                 connection = user_repository.db_connector.connect()
                 connection.rollback()
-                # db.connect().rollback()
 
     return render_template('users/createMeeting.html', meeting=meeting, errors=errors)
 

@@ -36,7 +36,7 @@
 
     <div class="mb-3">
         <label for="description" class="form-label">Описание</label>
-        <textarea name="description" id="description" class="form-control {% if errors.description %}is-invalid{% elif meeting.description %}is-valid{% endif %}" rows="5" required>{{ meeting.description}}</textarea>         
+        <textarea name="description" id="description" class="markdown-editor form-control {% if errors.description %}is-invalid{% elif meeting.description %}is-valid{% endif %}" rows="5" required>{{ meeting.description}}</textarea>         
         {% if errors.description %}
             <div class="invalid-feedback">
                 {{errors.description}}
