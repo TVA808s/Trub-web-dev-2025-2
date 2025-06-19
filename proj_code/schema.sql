@@ -84,8 +84,8 @@ INSERT INTO users (
 INSERT INTO meetings (title, description, date, place, volunteers_amount, image, organizer)
 VALUES
 ('Уборка парка', 'Генеральная уборка Центрального городского парка', '2025-05-15', 'Центральный парк', 5, 'park_cleanup.jpg', 1),
-('Помощь приюту для животных', 'Кормление животных и уборка вольеров', '2025-08-02', 'Приют "Добрые руки"', 1, 'animal_shelter.jpg', 1),
-('Благотворительный забег', 'Ежегодный забег в поддержку детских домов', '2025-09-21', 'Городской стадион', 3, 'charity_run.jpg', 1),
+('Помощь приюту для животных', 'Кормление животных и уборка вольеров', '2025-08-02', 'Приют "Добрые руки"', 2, 'animal_shelter.jpg', 1),
+('Благотворительный забег', 'Ежегодный забег в поддержку детских домов', '2025-09-21', 'Городской стадион', 4, 'charity_run.jpg', 1),
 ('Обучение пожилых людей', 'Базовый курс компьютерной грамотности', '2025-07-30', 'Библиотека №5', 2, 'seniors_course.jpg', 1),
 ('Экологическая акция', 'Сбор пластика и макулатуры в микрорайоне', '2025-06-24', 'Сквер у фонтана', 4, 'eco_action.jpg', 1);
 
@@ -93,14 +93,14 @@ VALUES
 INSERT INTO registration_table (meeting, volunteer, contacts, date, status)
 VALUES
 (1, 3, 'user@example.com', '2024-07-01 10:00:00', 'accepted'),
-(1, 2, 'moder@example.com', '2024-07-02 11:30:00', 'accepted'),
+(1, 2, 'moder@example.com', '2024-07-02 11:30:00', 'pending'),
 
 (2, 3, 'user@example.com', '2024-07-10 09:45:00', 'pending'),
-(2, 1, 'admin@example.com', '2024-08-01 12:30:00', 'accepted'),
+(2, 1, 'admin@example.com', '2024-08-01 12:30:00', 'pending'),
 (2, 2, 'moder@example.com', '2024-08-02 13:45:00', 'pending'),
 
-(3, 1, 'admin@example.com', '2024-08-01 12:30:00', 'accepted'),
-(3, 2, 'moder@example.com', '2024-08-02 13:45:00', 'accepted'),
+(3, 1, 'admin@example.com', '2024-08-01 12:30:00', 'pending'),
+(3, 2, 'moder@example.com', '2024-08-02 13:45:00', 'pending'),
 (3, 3, 'user@example.com', '2024-08-03 10:15:00', 'accepted'),
 
 (4, 3, 'user@example.com', '2024-07-15 14:00:00', 'accepted'),
