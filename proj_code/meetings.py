@@ -14,10 +14,10 @@ cleaner = Cleaner()
 meeting_repository = MeetingRepository(db)
 user_repository = UserRepository(db)
 
-bp = Blueprint('users', __name__, url_prefix='/users')
+bp = Blueprint('meetings', __name__, url_prefix='/meetings')
 
 login_manager = LoginManager()
-login_manager.login_view = 'users.login'
+login_manager.login_view = 'meetings.login'
 login_manager.login_message = 'Авторизуйтесь для доступа к ресурсу.'
 login_manager.login_message_category = 'warning'
 
@@ -28,15 +28,15 @@ def check_rights(req_role):
         def decorated_function(*args, **kwargs):
             if not current_user.is_authenticated:
                 flash('Для выполнения данного действия необходимо пройти процедуру аутентификации', 'danger')
-                return redirect(url_for('users.login'))
+                return redirect(url_for('meetings.login'))
             
             if req_role == 'Администратор' and current_user.role_name != 'Администратор':
                 flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
-                return redirect(url_for('users.index'))
+                return redirect(url_for('meetings.index'))
 
             if req_role == 'Модератор' and current_user.role_name not in ['Модератор', 'Администратор']:                
                 flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
-                return redirect(url_for('users.index'))
+                return redirect(url_for('meetings.index'))
             
             return func(*args, **kwargs)
         return decorated_function
@@ -59,7 +59,7 @@ def load_user(user_id):
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('users.index'))
+        return redirect(url_for('meetings.index'))
     if request.method == 'POST':
         login = request.form.get('login')
         password = request.form.get('password')
@@ -69,15 +69,15 @@ def login():
         if user is not None:
             flash('Авторизация прошла успешно', 'success')
             login_user(User(user.id, user.login, user.role_name, user.full_name), remember=remember_me)
-            next_url = request.args.get('next', url_for('users.index'))
+            next_url = request.args.get('next', url_for('meetings.index'))
             return redirect(next_url)
         flash('Невозможно аутентифицироваться с указанными логином и паролем', 'danger')
-    return render_template('users/login.html', title='Войти')
+    return render_template('meetings/login.html', title='Войти')
 
 @bp.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('users.index'))
+    return redirect(url_for('meetings.index'))
 
 @bp.errorhandler(connector.errors.DatabaseError)
 def handler():
@@ -91,14 +91,14 @@ def index():
     total_pages = ceil(total / per_page) if total > 0 else 1
     if page < 1 or (total_pages > 0 and page > total_pages):
         flash('Запрошенная страница не существует', 'warning')
-        return redirect(url_for('users.index'))
+        return redirect(url_for('meetings.index'))
     
     role = False
     if current_user.is_authenticated:
         role = current_user.role_name
 
     return render_template(
-        'users/index.html', 
+        'meetings/index.html', 
         role=role, 
         meetings=meetings, 
         current_page=page, 
@@ -114,7 +114,7 @@ def registration(meeting_id):
 
     if current_user.role_name not in ['Модератор', 'Администратор']:
         flash('У вас недостаточно прав', 'danger')
-        return redirect(url_for('users.getMeeting', meeting_id=meeting_id))
+        return redirect(url_for('meetings.getMeeting', meeting_id=meeting_id))
     
     if action == 'accept':
         meeting_repository.set_status(registration_id, 'accepted')
@@ -128,7 +128,7 @@ def registration(meeting_id):
         meeting_repository.set_status(registration_id, 'rejected')
         flash('Заявка отклонена', 'info')
 
-    return redirect(url_for('users.getMeeting', meeting_id=meeting_id))
+    return redirect(url_for('meetings.getMeeting', meeting_id=meeting_id))
 
 
 @bp.route('/<int:meeting_id>')
@@ -136,7 +136,7 @@ def getMeeting(meeting_id):
     meeting = meeting_repository.get_meeting_by_id(meeting_id)
     if meeting is None:
         flash('Мероприятие не найдено', 'danger')
-        return redirect(url_for('users.index'))
+        return redirect(url_for('meetings.index'))
 
     role = False
     already_registr = False
@@ -152,7 +152,7 @@ def getMeeting(meeting_id):
         pending_volunteers = False
 
     return render_template(
-        'users/getMeeting.html',
+        'meetings/getMeeting.html',
         meeting=meeting,
         accepted_volunteers=accepted_volunteers,
         pending_volunteers=pending_volunteers,
@@ -210,13 +210,13 @@ def createMeeting():
             try:
                 meeting_repository.create(**meeting)
                 flash('Мероприятие успешно создано', 'success')
-                return redirect(url_for('users.index'))
+                return redirect(url_for('meetings.index'))
             except connector.errors.DatabaseError:
                 flash('При сохранении данных возникла ошибка. Проверьте корректность введённых данных', 'danger')
                 connection = meeting_repository.db_connector.connect()
                 connection.rollback()
 
-    return render_template('users/createMeeting.html', meeting=meeting, errors=errors)
+    return render_template('meetings/createMeeting.html', meeting=meeting, errors=errors)
 
 
 @bp.route('/<int:meeting_id>/editMeeting', methods = ['POST', 'GET'])
@@ -242,7 +242,7 @@ def editMeeting(meeting_id):
             try:
                 meeting_repository.edit(meeting_id,**meeting)
                 flash('Мероприятие успешно отредактированно', 'success')
-                return redirect(url_for('users.index'))
+                return redirect(url_for('meetings.index'))
             except connector.errors.DatabaseError:
                 flash('При сохранении данных возникла ошибка. Проверьте корректность введённых данных', 'danger')
                 connection = meeting_repository.db_connector.connect()
@@ -250,7 +250,7 @@ def editMeeting(meeting_id):
     if request.method == 'GET':
         meeting = meeting_repository.get_meeting_by_id(meeting_id)
 
-    return render_template('users/editMeeting.html', meeting=meeting, errors=errors)
+    return render_template('meetings/editMeeting.html', meeting=meeting, errors=errors)
 
 
 @bp.route('/<int:meeting_id>/delete', methods = ['POST'])
@@ -262,7 +262,7 @@ def delete(meeting_id):
         flash('Запись успешно удалена', 'success')
     except Exception as e:
         flash(f'Ошибка при удалении: {e}', 'danger')
-    return redirect(url_for('users.index'))
+    return redirect(url_for('meetings.index'))
 
 @bp.route('/<int:meeting_id>/registrate', methods=['POST'])
 @login_required
@@ -274,5 +274,5 @@ def registrate(meeting_id):
             flash('Запись успешно создана', 'success') 
     except Exception as e:
         flash(f'Ошибка при создании: {e}', 'danger')
-    return redirect(url_for('users.getMeeting', meeting_id=meeting_id)) 
+    return redirect(url_for('meetings.getMeeting', meeting_id=meeting_id)) 
 

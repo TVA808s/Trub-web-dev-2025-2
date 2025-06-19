@@ -15,9 +15,9 @@ def create_app(test_config=None):
     db.init_app(app)
     
     # Регистрация блюпринтов
-    from proj_code.users import bp as users_bp, index, login_manager
+    from proj_code.meetings import bp as meetings_bp, index, login_manager
     login_manager.init_app(app)
-    app.register_blueprint(users_bp)
+    app.register_blueprint(meetings_bp)
     app.add_url_rule('/', 'index', index)
 
     # Обработка markdown в html
