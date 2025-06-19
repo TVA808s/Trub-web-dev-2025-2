@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         const form = document.getElementById('deleteModalForm');
         if (form) {
-            form.action = `/users/${meetingId}/delete`;
+            form.action = `/meetings/${meetingId}/delete`;
         }
     });
 });

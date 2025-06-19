@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             const form = document.getElementById('createForm');
             if (form) {
-                form.action = `/users/${meetingId}/registrate`;
+                form.action = `/meetings/${meetingId}/registrate`;
             }
             const contactsInput = document.getElementById('contacts');
             if (contactsInput) {
