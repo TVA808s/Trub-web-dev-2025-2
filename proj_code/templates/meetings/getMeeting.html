@@ -177,14 +177,4 @@
 {% block scripts %}
 {{ super() }}
 <script src="{{ url_for('static', filename='registration_modal.js') }}"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.markdown-editor').forEach(function(element) {
-        new EasyMDE({
-            element: element,
-            placeholder: 'This area is a MARKDOWN',
-        })
-        })
-    })
-</script>
 {% endblock %}

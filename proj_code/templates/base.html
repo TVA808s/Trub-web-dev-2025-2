@@ -63,6 +63,16 @@
     {% block scripts %}
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>      
+      <script>
+          document.addEventListener('DOMContentLoaded', function() {
+              document.querySelectorAll('.markdown-editor').forEach(function(element) {
+              new EasyMDE({
+                  element: element,
+                  placeholder: 'This area is a MARKDOWN',
+              })
+              })
+          })
+      </script>
     {% endblock %}
   </body>
 </html>
