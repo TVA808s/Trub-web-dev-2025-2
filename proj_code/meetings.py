@@ -178,7 +178,7 @@ def createMeeting():
         fields = ('title', 'description', 'date', 'place', 'volunteers_amount')
         for field in fields:
             value = request.form.get(field)        
-            if value is '' or value is None:
+            if value == '' or value is None:
                 errors[field] = 'Введите значение'
                 meeting[field] = '' 
             else:
@@ -230,7 +230,7 @@ def editMeeting(meeting_id):
         fields = ('title', 'description', 'date', 'place', 'volunteers_amount')
         for field in fields:
             value = request.form.get(field)        
-            if value is '' or value is None:
+            if value == '' or value is None:
                 errors[field] = 'Введите значение'
                 meeting[field] = '' 
             else:
