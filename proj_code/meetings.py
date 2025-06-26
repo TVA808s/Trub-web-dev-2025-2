@@ -161,7 +161,6 @@ def getMeeting(meeting_id):
     )
 
 
-
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg'}
 
@@ -264,6 +263,7 @@ def delete(meeting_id):
         flash(f'Ошибка при удалении: {e}', 'danger')
     return redirect(url_for('meetings.index'))
 
+
 @bp.route('/<int:meeting_id>/registrate', methods=['POST'])
 @login_required
 def registrate(meeting_id):
@@ -271,7 +271,9 @@ def registrate(meeting_id):
         contacts = request.form.get('contacts')
         if contacts:
             meeting_repository.registrate(meeting_id, current_user.id, contacts)
-            flash('Запись успешно создана', 'success') 
+            flash('Запись успешно создана', 'success')
+        else:
+            flash('Укажите ваши данные', 'danger')
     except Exception as e:
         flash(f'Ошибка при создании: {e}', 'danger')
     return redirect(url_for('meetings.getMeeting', meeting_id=meeting_id)) 
