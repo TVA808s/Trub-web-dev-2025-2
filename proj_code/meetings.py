@@ -221,7 +221,7 @@ def createMeeting():
 
 @bp.route('/<int:meeting_id>/editMeeting', methods = ['POST', 'GET'])
 @login_required
-@check_rights('Администратор')
+@check_rights('Модератор')
 def editMeeting(meeting_id):
     meeting = {}
     errors = {}
