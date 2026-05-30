@@ -1,0 +1,11 @@
+SECRET_KEY = '70ec4882d43c8c739b5934540e8e62bd2bee5b2d4fd970691cc1c1ce826a77f5'
+
+# Настройки Flask-Login
+REMEMBER_COOKIE_DURATION = 30 * 24 * 3600  # 30 дней (в секундах)
+REMEMBER_COOKIE_HTTPONLY = True
+REMEMBER_COOKIE_SECURE = False  # True для HTTPS, False для HTTP
+
+# Настройки сессий
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = False  # True для HTTPS
+PERMANENT_SESSION_LIFETIME = 30 * 24 * 3600  # 30 дней
